@@ -63,31 +63,35 @@ void EventManager::notifyUpcomingEvents() const {
     auto now = std::chrono::system_clock::now();
     auto now_sec = std::chrono::floor<std::chrono::seconds>(now);
 
+    int delta = 24; // ore
 
-    int delta = 24; // using as a variable for delta between the now and maximum difference to the event.
+    bool found = false;
+    for (const auto &ev : evenimente) {
+        std::chrono::sys_seconds event_tp = std::chrono::sys_days{ev.getDate()} + ev.getHour().to_duration() - std::chrono::hours(3); // -3 pt UTC, romania are GMT+3, hardcoded
+        auto diff = event_tp - now_sec;
 
-    // implement an edit to change delta !
+        // verif daca evenimentul e in <= delta ore
+        if (event_tp >= now_sec && diff <= std::chrono::hours(delta)) {
+            found = true;
+            auto hours_left = std::chrono::duration_cast<std::chrono::hours>(diff).count();
+            auto minutes_left = std::chrono::duration_cast<std::chrono::minutes>(diff).count() % 60;
+            auto seconds_left = std::chrono::duration_cast<std::chrono::seconds>(diff).count() % 60;
 
-    for (const auto &ev: evenimente) {
-        std::chrono::sys_seconds event_tp = std::chrono::sys_days{ev.getDate()} + ev.getHour().to_duration();
-
-        if (event_tp > now_sec && event_tp - now_sec < std::chrono::hours(delta)) {
-            std::cout << "Upcoming event: " << ev.getTitle() << " at "
-                    << unsigned(ev.getHour().hours().count()) << ":"
-                    << unsigned(ev.getHour().minutes().count()) << ":"
-                    << unsigned(ev.getHour().seconds().count())
-                    << " on "
-                    << int(ev.getDate().year()) << "/"
-                    << unsigned(ev.getDate().month()) << "/"
-                    << unsigned(ev.getDate().day())
-                    << " in " << ev.getLocation() << "\n";
+            std::cout << "Upcoming event: " << ev.getTitle()
+                      << " at " << std::setw(2) << std::setfill('0') << unsigned(ev.getHour().hours().count())
+                      << ":" << std::setw(2) << std::setfill('0') << unsigned(ev.getHour().minutes().count())
+                      << ":" << std::setw(2) << std::setfill('0') << unsigned(ev.getHour().seconds().count())
+                      << " on " << int(ev.getDate().year()) << "/"
+                      << unsigned(ev.getDate().month()) << "/"
+                      << unsigned(ev.getDate().day())
+                      << " in " << ev.getLocation()
+                      << " (in " << hours_left << "h "
+                      << minutes_left << "m "
+                      << seconds_left << "s)\n";
         }
     }
-    /*
-    sys_days{ev.data} gives you midnight of the event’s day.
-    ev.ora.to_duration() is the time since midnight.
-    sys_seconds event_tp is the full timestamp for that event.
-    event_tp > now_sec && event_tp - now_sec < hours(delta): Only shows events in the future and within 24 hours. */
+    if (!found)
+        std::cout << "Nu exista evenimente in urmatoarele " << delta << " ore.\n";
 }
 
 void EventManager::saveToFile(const std::string &filename) const {
@@ -116,7 +120,7 @@ void EventManager::loadFromFile(const std::string &filename) {
         evenimente.push_back(Event::deserialize(line));
 
     unsigned int maxID = 0;
-    for (const auto& ev : evenimente)
+    for (const auto &ev: evenimente)
         if (ev.getID() > maxID) maxID = ev.getID();
     currentID = maxID + 1;
 
