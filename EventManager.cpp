@@ -5,6 +5,11 @@
 #include "EventManager.h"
 #include <fstream>
 
+int EventManager::size() const {
+    return evenimente.size();
+}
+
+
 void EventManager::addEvent(const Event &event) {
     evenimente.push_back(event);
     std::cout<<"Evenimentul "<<event.getTitle()<<" a fost adaugat cu succes in planificator."<<std::endl;
@@ -30,8 +35,8 @@ bool EventManager::editEvent(unsigned int ID, const Event &newEvent) {
 }
 
 void EventManager::showEvents() const {
-    if (evenimente.size()==0)
-        std::cout<<"Nu exista evenimente de afisat!"<<std::endl;
+    if (evenimente.size() == 0)
+        std::cout << "Nu exista evenimente de afisat!" << std::endl;
 
     for (const auto &ev: evenimente) {
         ev.print();
@@ -55,7 +60,6 @@ std::vector<Event> EventManager::findEventsByTitle(const std::string &title) con
 }
 
 void EventManager::notifyUpcomingEvents() const {
-
     auto now = std::chrono::system_clock::now();
     auto now_sec = std::chrono::floor<std::chrono::seconds>(now);
 
@@ -64,19 +68,19 @@ void EventManager::notifyUpcomingEvents() const {
 
     // implement an edit to change delta !
 
-    for (const auto &ev:evenimente) {
+    for (const auto &ev: evenimente) {
         std::chrono::sys_seconds event_tp = std::chrono::sys_days{ev.getDate()} + ev.getHour().to_duration();
 
         if (event_tp > now_sec && event_tp - now_sec < std::chrono::hours(delta)) {
             std::cout << "Upcoming event: " << ev.getTitle() << " at "
-                      << unsigned(ev.getHour().hours().count()) << ":"
-                      << unsigned(ev.getHour().minutes().count()) << ":"
-                      << unsigned(ev.getHour().seconds().count())
-                      << " on "
-                      << int(ev.getDate().year()) << "/"
-                      << unsigned(ev.getDate().month()) << "/"
-                      << unsigned(ev.getDate().day())
-                      << " in " << ev.getLocation() << "\n";
+                    << unsigned(ev.getHour().hours().count()) << ":"
+                    << unsigned(ev.getHour().minutes().count()) << ":"
+                    << unsigned(ev.getHour().seconds().count())
+                    << " on "
+                    << int(ev.getDate().year()) << "/"
+                    << unsigned(ev.getDate().month()) << "/"
+                    << unsigned(ev.getDate().day())
+                    << " in " << ev.getLocation() << "\n";
         }
     }
     /*
@@ -89,21 +93,20 @@ void EventManager::notifyUpcomingEvents() const {
 void EventManager::saveToFile(const std::string &filename) const {
     std::ofstream fout(filename);
     if (!fout.is_open()) {
-        std::cerr<<"Error in opening "<<filename<<"."<<std::endl;
+        std::cerr << "Error in opening " << filename << "." << std::endl;
         return;
     }
 
-    for (const auto & ev:evenimente) {
-        fout<<ev.serialize();
-        fout<<'\n';
+    for (const auto &ev: evenimente) {
+        fout << ev.serialize();
+        fout << '\n';
     }
-
 }
 
 void EventManager::loadFromFile(const std::string &filename) {
     std::ifstream fin(filename);
     if (!fin.is_open()) {
-        std::cerr<<"Error in opening "<<filename<<"."<<std::endl;
+        std::cerr << "Error in opening " << filename << "." << std::endl;
         return;
     }
 
@@ -111,6 +114,11 @@ void EventManager::loadFromFile(const std::string &filename) {
     std::string line;
     while (std::getline(fin, line))
         evenimente.push_back(Event::deserialize(line));
+
+    unsigned int maxID = 0;
+    for (const auto& ev : evenimente)
+        if (ev.getID() > maxID) maxID = ev.getID();
+    currentID = maxID + 1;
 
     fin.close();
 }
