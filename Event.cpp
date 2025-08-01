@@ -38,7 +38,7 @@ std::chrono::year_month_day Event::getDate() const {
     return data;
 }
 
-void Event::setDate(const std::chrono::year_month_day& date) {
+void Event::setDate(const std::chrono::year_month_day &date) {
     data = date;
 }
 
@@ -46,7 +46,7 @@ std::chrono::hh_mm_ss<std::chrono::seconds> Event::getHour() const {
     return ora;
 }
 
-void Event::setHour(const std::chrono::hh_mm_ss<std::chrono::seconds>& hour) {
+void Event::setHour(const std::chrono::hh_mm_ss<std::chrono::seconds> &hour) {
     ora = hour;
 }
 
@@ -59,10 +59,10 @@ void Event::setLocation(const std::string &location) {
 }
 
 void Event::print() const {
-    std::cout << "Detalii eveniment " << titlu << ':' << std::endl;
+    std::cout << "Detalii eveniment " << titlu << " cu ID "<< id << ':' << std::endl;
     std::cout << '\t' << "Descriere eveniment: " << descriere << std::endl;
     // Folosim operatorul << supraîncărcat pentru tipurile chrono
-    std::cout << '\t' << "Data eveniment " << titlu << ':' << data << ", ora: " << ora << std::endl;
+    std::cout << '\t' << "Data eveniment " << titlu << ": " << data << ", ora: " << ora << std::endl;
     std::cout << '\t' << "Locatie eveniment: " << locatie << std::endl;
 }
 
@@ -84,7 +84,22 @@ bool Event::operator<(const Event &other) const {
 }
 std::string Event::serialize() const {
     std::stringstream ss;
-    ss << id << "|" << titlu << "|" << descriere << "|" << data << "|" << ora << "|" << locatie;
+    // Presupunem că data este de tip std::chrono::year_month_day
+    // Extragem ziua, luna și anul
+    unsigned int zi = static_cast<unsigned int>(unsigned(data.day()));
+    unsigned int luna = static_cast<unsigned int>(unsigned(data.month()));
+    int an = int(data.year());
+
+    // FORMATARE: dd/mm/yyyy
+    ss << id << "|"
+       << titlu << "|"
+       << descriere << "|"
+       << (zi < 10 ? "0" : "") << zi << "/"
+       << (luna < 10 ? "0" : "") << luna << "/"
+       << an << "|"
+       << ora << "|"
+       << locatie;
+
     return ss.str();
 }
 
@@ -105,9 +120,9 @@ Event Event::deserialize(const std::string &line) {
     std::stringstream data_ss(fields[3]);
     std::string year_str, month_str, day_str;
 
-    std::getline(data_ss, year_str, '-');
-    std::getline(data_ss, month_str, '-');
-    std::getline(data_ss, day_str);
+    std::getline(data_ss, day_str, '/');
+    std::getline(data_ss, month_str, '/');
+    std::getline(data_ss, year_str);
 
     auto y = std::chrono::year{std::stoi(year_str)};
     auto m = std::chrono::month{static_cast<unsigned int>(std::stoul(month_str))};
@@ -126,7 +141,7 @@ Event Event::deserialize(const std::string &line) {
     auto s = std::chrono::seconds{std::stol(sec_str)};
     std::chrono::hh_mm_ss<std::chrono::seconds> parsed_ora{h + min + s};
 
-    return Event(id, titlu, descriere, parsed_data, parsed_ora, locatie);
+    return {id, titlu, descriere, parsed_data, parsed_ora, locatie};
 }
 
 
