@@ -66,8 +66,9 @@ void EventManager::notifyUpcomingEvents() const {
     int delta = 24; // ore
 
     bool found = false;
-    for (const auto &ev : evenimente) {
-        std::chrono::sys_seconds event_tp = std::chrono::sys_days{ev.getDate()} + ev.getHour().to_duration() - std::chrono::hours(3); // -3 pt UTC, romania are GMT+3, hardcoded
+    for (const auto &ev: evenimente) {
+        std::chrono::sys_seconds event_tp = std::chrono::sys_days{ev.getDate()} + ev.getHour().to_duration() -
+                                            std::chrono::hours(3); // -3 pt UTC, romania are GMT+3, hardcoded
         auto diff = event_tp - now_sec;
 
         // verif daca evenimentul e in <= delta ore
@@ -78,16 +79,16 @@ void EventManager::notifyUpcomingEvents() const {
             auto seconds_left = std::chrono::duration_cast<std::chrono::seconds>(diff).count() % 60;
 
             std::cout << "Upcoming event: " << ev.getTitle()
-                      << " at " << std::setw(2) << std::setfill('0') << unsigned(ev.getHour().hours().count())
-                      << ":" << std::setw(2) << std::setfill('0') << unsigned(ev.getHour().minutes().count())
-                      << ":" << std::setw(2) << std::setfill('0') << unsigned(ev.getHour().seconds().count())
-                      << " on " << int(ev.getDate().year()) << "/"
-                      << unsigned(ev.getDate().month()) << "/"
-                      << unsigned(ev.getDate().day())
-                      << " in " << ev.getLocation()
-                      << " (in " << hours_left << "h "
-                      << minutes_left << "m "
-                      << seconds_left << "s)\n";
+                    << " at " << std::setw(2) << std::setfill('0') << unsigned(ev.getHour().hours().count())
+                    << ":" << std::setw(2) << std::setfill('0') << unsigned(ev.getHour().minutes().count())
+                    << ":" << std::setw(2) << std::setfill('0') << unsigned(ev.getHour().seconds().count())
+                    << " on " << int(ev.getDate().year()) << "/"
+                    << unsigned(ev.getDate().month()) << "/"
+                    << unsigned(ev.getDate().day())
+                    << " in " << ev.getLocation()
+                    << " (in " << hours_left << "h "
+                    << minutes_left << "m "
+                    << seconds_left << "s)\n";
         }
     }
     if (!found)

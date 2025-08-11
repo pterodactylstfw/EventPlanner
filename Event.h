@@ -23,6 +23,7 @@ private:
 
 public:
     Event() = default;
+
     Event(unsigned int ID, const std::string &title, const std::string &description,
           const std::chrono::year_month_day &date, const std::chrono::hh_mm_ss<std::chrono::seconds> &hour,
           const std::string &location)
@@ -39,9 +40,11 @@ public:
     void setDescription(const std::string & description);
 
     std::chrono::year_month_day getDate() const;
+
     void setDate(const std::chrono::year_month_day &date);
 
     std::chrono::hh_mm_ss<std::chrono::seconds> getHour() const;
+
     void setHour(const std::chrono::hh_mm_ss<std::chrono::seconds> &hour);
 
 

@@ -19,9 +19,11 @@ public:
     EventManager(const std::vector<Event> & events): evenimente(events) {}
 
     int size() const;
+
     unsigned int getNextID() { return currentID++; }
     void resetCurrentID(unsigned int id) { currentID = id; }
-    const std::vector<Event>& getEvents() const { return evenimente; }
+    const std::vector<Event> &getEvents() const { return evenimente; }
+
     void addEvent(const Event& event);
     bool deleteEvent(unsigned int ID);
     bool editEvent(unsigned int ID, const Event & newEvent);

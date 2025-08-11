@@ -59,7 +59,7 @@ void Event::setLocation(const std::string &location) {
 }
 
 void Event::print() const {
-    std::cout << "Detalii eveniment " << titlu << " cu ID "<< id << ':' << std::endl;
+    std::cout << "Detalii eveniment " << titlu << " cu ID " << id << ':' << std::endl;
     std::cout << '\t' << "Descriere eveniment: " << descriere << std::endl;
     // Folosim operatorul << supraîncărcat pentru tipurile chrono
     std::cout << '\t' << "Data eveniment " << titlu << ": " << data << ", ora: " << ora << std::endl;
@@ -92,13 +92,13 @@ std::string Event::serialize() const {
 
     // FORMATARE: dd/mm/yyyy
     ss << id << "|"
-       << titlu << "|"
-       << descriere << "|"
-       << (zi < 10 ? "0" : "") << zi << "/"
-       << (luna < 10 ? "0" : "") << luna << "/"
-       << an << "|"
-       << ora << "|"
-       << locatie;
+            << titlu << "|"
+            << descriere << "|"
+            << (zi < 10 ? "0" : "") << zi << "/"
+            << (luna < 10 ? "0" : "") << luna << "/"
+            << an << "|"
+            << ora << "|"
+            << locatie;
 
     return ss.str();
 }

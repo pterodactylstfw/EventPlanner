@@ -5,4 +5,6 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_executable(EventPlanner main.cpp
         Event.cpp
-        Event.h)
+        Event.h
+        EventManager.cpp
+        EventManager.h)
