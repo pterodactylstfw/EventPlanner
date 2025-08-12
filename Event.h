@@ -51,8 +51,6 @@ public:
     std::string getLocation() const;
     void setLocation(const std::string & location);
 
-    void print() const;
-
     std::string toString() const;
 
     bool operator<(const Event &) const;

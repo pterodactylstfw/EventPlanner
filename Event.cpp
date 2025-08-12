@@ -58,13 +58,6 @@ void Event::setLocation(const std::string &location) {
     locatie = location;
 }
 
-void Event::print() const {
-    std::cout << "Detalii eveniment " << titlu << " cu ID " << id << ':' << std::endl;
-    std::cout << '\t' << "Descriere eveniment: " << descriere << std::endl;
-    // Folosim operatorul << supraîncărcat pentru tipurile chrono
-    std::cout << '\t' << "Data eveniment " << titlu << ": " << data << ", ora: " << ora << std::endl;
-    std::cout << '\t' << "Locatie eveniment: " << locatie << std::endl;
-}
 
 std::string Event::toString() const {
     std::stringstream ss;

@@ -39,7 +39,7 @@ void EventManager::showEvents() const {
         std::cout << "Nu exista evenimente de afisat!" << std::endl;
 
     for (const auto &ev: evenimente) {
-        ev.print();
+        std::cout<<ev.toString();
         std::cout<<"-----"<<std::endl;
     }
 }
