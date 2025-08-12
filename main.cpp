@@ -131,7 +131,9 @@ int main() {
             }
 
             case 4: {
-                planner.showEvents();
+                auto events = planner.showEvents();
+                for (const auto & ev:events)
+                    std::cout<<ev<<std::endl;
                 break;
             }
 
@@ -165,7 +167,9 @@ int main() {
 
             case 7: {
                 // Notifica despre urmatoarele evenimente
-                planner.notifyUpcomingEvents();
+                std::vector<std::string> evenimenteGasite = planner.notifyUpcomingEvents();
+                for (const auto& ev: evenimenteGasite)
+                    std::cout<<ev<<'\n';
                 break;
             }
 

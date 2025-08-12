@@ -35,7 +35,6 @@ bool EventManager::editEvent(unsigned int ID, const Event &newEvent) {
 }
 
 std::vector<std::string> EventManager::showEvents() const {
-
     std::vector<std::string> events;
     if (evenimente.empty())
         events.push_back("Nu exista evenimente de afisat!");
