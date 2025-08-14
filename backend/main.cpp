@@ -143,7 +143,7 @@ int main() {
                 std::cout << "Introduceti ID-ul cautat: ";
                 std::cin >> ID;
                 if (planner.findEventByID(ID))
-                    std::cout<<planner.findEventByID(ID)->toString();
+                    std::cout << planner.findEventByID(ID)->toString();
                 else
                     std::cout << "Nu exista eveniment cu acest ID!\n";
                 break;
@@ -159,7 +159,7 @@ int main() {
                     std::cout << "Nu exista evenimente cu acest titlu!\n";
                 else
                     for (const auto &ev: rezultate) {
-                        std::cout<<ev.toString();
+                        std::cout << ev.toString();
                         std::cout << "-----" << std::endl;
                     }
                 break;
