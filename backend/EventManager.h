@@ -27,10 +27,14 @@ public:
     void addEvent(const Event& event);
     bool deleteEvent(unsigned int ID);
     bool editEvent(unsigned int ID, const Event & newEvent);
+
     std::vector<std::string> showEvents() const;
+
     Event* findEventByID(unsigned int ID);
     std::vector<Event> findEventsByTitle(const std::string & title) const;
+
     std::vector<std::string> notifyUpcomingEvents() const;
+
     void saveToFile(const std::string & filename) const;
     void loadFromFile(const std::string & filename);
     ~EventManager() = default;

@@ -132,8 +132,8 @@ int main() {
 
             case 4: {
                 auto events = planner.showEvents();
-                for (const auto & ev:events)
-                    std::cout<<ev<<std::endl;
+                for (const auto &ev: events)
+                    std::cout << ev << std::endl;
                 break;
             }
 
@@ -143,7 +143,7 @@ int main() {
                 std::cout << "Introduceti ID-ul cautat: ";
                 std::cin >> ID;
                 if (planner.findEventByID(ID))
-                    planner.findEventByID(ID)->print();
+                    std::cout<<planner.findEventByID(ID)->toString();
                 else
                     std::cout << "Nu exista eveniment cu acest ID!\n";
                 break;
@@ -159,7 +159,7 @@ int main() {
                     std::cout << "Nu exista evenimente cu acest titlu!\n";
                 else
                     for (const auto &ev: rezultate) {
-                        ev.print();
+                        std::cout<<ev.toString();
                         std::cout << "-----" << std::endl;
                     }
                 break;
@@ -168,8 +168,8 @@ int main() {
             case 7: {
                 // Notifica despre urmatoarele evenimente
                 std::vector<std::string> evenimenteGasite = planner.notifyUpcomingEvents();
-                for (const auto& ev: evenimenteGasite)
-                    std::cout<<ev<<'\n';
+                for (const auto &ev: evenimenteGasite)
+                    std::cout << ev << '\n';
                 break;
             }
 
