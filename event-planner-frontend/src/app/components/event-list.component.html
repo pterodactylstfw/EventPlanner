@@ -1,0 +1,158 @@
+<div class="event-planner-container">
+  <h1>🗓️ Event Planner</h1>
+  
+  <!-- Error Message -->
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+    <button (click)="error = ''" class="close-btn">&times;</button>
+  </div>
+
+  <!-- Add New Event Form -->
+  <div class="card">
+    <h2>Add New Event</h2>
+    <form (ngSubmit)="createEvent()" class="event-form">
+      <div class="form-group">
+        <label for="title">Title:</label>
+        <input 
+          type="text" 
+          id="title" 
+          [(ngModel)]="newEvent.title" 
+          name="title"
+          required 
+          placeholder="Enter event title">
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description:</label>
+        <textarea 
+          id="description" 
+          [(ngModel)]="newEvent.description" 
+          name="description"
+          required 
+          placeholder="Enter event description"></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="date">Date:</label>
+          <input 
+            type="date" 
+            id="date" 
+            [(ngModel)]="newEvent.date" 
+            name="date"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="time">Time:</label>
+          <input 
+            type="time" 
+            id="time" 
+            [(ngModel)]="newEvent.time" 
+            name="time"
+            required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="location">Location:</label>
+        <input 
+          type="text" 
+          id="location" 
+          [(ngModel)]="newEvent.location" 
+          name="location"
+          required 
+          placeholder="Enter event location">
+      </div>
+
+      <button type="submit" class="btn btn-primary">Add Event</button>
+    </form>
+  </div>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="loading" class="loading">
+    Loading events...
+  </div>
+
+  <!-- Events List -->
+  <div class="events-grid" *ngIf="!loading">
+    <div class="card event-card" *ngFor="let event of events">
+      <!-- Display Mode -->
+      <div *ngIf="editingEvent?.id !== event.id">
+        <h3>{{ event.title }}</h3>
+        <p class="description">{{ event.description }}</p>
+        <div class="event-details">
+          <p><strong>📅 Date:</strong> {{ event.date }}</p>
+          <p><strong>🕒 Time:</strong> {{ event.time }}</p>
+          <p><strong>📍 Location:</strong> {{ event.location }}</p>
+        </div>
+        <div class="actions">
+          <button (click)="editEvent(event)" class="btn btn-secondary">Edit</button>
+          <button (click)="deleteEvent(event.id!)" class="btn btn-danger">Delete</button>
+        </div>
+      </div>
+
+      <!-- Edit Mode -->
+      <div *ngIf="editingEvent?.id === event.id">
+        <form (ngSubmit)="updateEvent()" class="event-form">
+          <div class="form-group">
+            <label>Title:</label>
+            <input 
+              type="text" 
+              [(ngModel)]="editingEvent!.title" 
+              name="editTitle"
+              required>
+          </div>
+
+          <div class="form-group">
+            <label>Description:</label>
+            <textarea 
+              [(ngModel)]="editingEvent!.description" 
+              name="editDescription"
+              required></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Date:</label>
+              <input 
+                type="date" 
+                [(ngModel)]="editingEvent!.date" 
+                name="editDate"
+                required>
+            </div>
+
+            <div class="form-group">
+              <label>Time:</label>
+              <input 
+                type="time" 
+                [(ngModel)]="editingEvent!.time" 
+                name="editTime"
+                required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Location:</label>
+            <input 
+              type="text" 
+              [(ngModel)]="editingEvent!.location" 
+              name="editLocation"
+              required>
+          </div>
+
+          <div class="actions">
+            <button type="submit" class="btn btn-success">Save</button>
+            <button type="button" (click)="cancelEdit()" class="btn btn-secondary">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && events.length === 0" class="empty-state">
+    <h3>No events found</h3>
+    <p>Add your first event using the form above!</p>
+  </div>
+</div>
