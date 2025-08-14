@@ -1,34 +1,37 @@
-cmake_minimum_required(VERSION 3.31)
+cmake_minimum_required(VERSION 3.16)
 project(EventPlanner)
 
 set(CMAKE_CXX_STANDARD 20)
 
-set(BOOST_ROOT "/opt/homebrew")
-find_package(Boost REQUIRED)
+# Find required packages
+find_package(Boost REQUIRED COMPONENTS system filesystem)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(JSONCPP jsoncpp)
 
-set(CMAKE_PREFIX_PATH "/Users/pterodactylstfw/Qt/6.9.1/macos/lib/cmake")
-include_directories(${CMAKE_SOURCE_DIR}/crow/include)
+# Include Crow library
+include_directories(${CMAKE_SOURCE_DIR}/../crow_lib/include)
 
-# Find Boost (folosește boost_system pentru Crow)
-find_package(Boost REQUIRED COMPONENTS system)
-include_directories(${Boost_INCLUDE_DIRS})
+# CLI version (original)
+add_executable(EventPlanner 
+    main.cpp
+    Event.cpp
+    Event.h
+    EventManager.cpp
+    EventManager.h
+)
 
-# Find Asio
-include_directories(/opt/homebrew/include)
+# REST API version
+add_executable(EventPlannerAPI 
+    main_api.cpp
+    Event.cpp
+    Event.h
+    EventManager.cpp
+    EventManager.h
+)
 
-find_package(Qt6 COMPONENTS Widgets REQUIRED)
-add_executable(EventPlanner main.cpp
-        Event.cpp
-        Event.h
-        EventManager.cpp
-        EventManager.h)
-add_executable(EventPlannerGui main_gui.cpp
-        Event.cpp
-        Event.h
-        EventManager.cpp
-        EventManager.h)
-
-
-target_link_libraries(EventPlanner PRIVATE Qt6::Widgets)
-target_link_libraries(EventPlannerGui PRIVATE Qt6::Widgets)
+# Link libraries
 target_link_libraries(EventPlanner PRIVATE ${Boost_LIBRARIES} pthread)
+target_link_libraries(EventPlannerAPI PRIVATE ${Boost_LIBRARIES} ${JSONCPP_LIBRARIES} pthread)
+
+# Include directories for JSON
+target_include_directories(EventPlannerAPI PRIVATE ${JSONCPP_INCLUDE_DIRS})
