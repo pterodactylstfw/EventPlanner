@@ -34,14 +34,16 @@ bool EventManager::editEvent(unsigned int ID, const Event &newEvent) {
     return false;
 }
 
-void EventManager::showEvents() const {
-    if (evenimente.size() == 0)
-        std::cout << "Nu exista evenimente de afisat!" << std::endl;
+std::vector<std::string> EventManager::showEvents() const {
+    std::vector<std::string> events;
+    if (evenimente.empty())
+        events.push_back("Nu exista evenimente de afisat!");
 
     for (const auto &ev: evenimente) {
-        ev.print();
-        std::cout<<"-----"<<std::endl;
+        events.push_back(ev.toString() + "-----");
     }
+
+    return events;
 }
 
 Event * EventManager::findEventByID(unsigned int ID) {
@@ -59,13 +61,14 @@ std::vector<Event> EventManager::findEventsByTitle(const std::string &title) con
     return eventsByTitle;
 }
 
-void EventManager::notifyUpcomingEvents() const {
+std::vector<std::string> EventManager::notifyUpcomingEvents() const {
     auto now = std::chrono::system_clock::now();
     auto now_sec = std::chrono::floor<std::chrono::seconds>(now);
 
     int delta = 24; // ore
 
-    bool found = false;
+    std::vector<std::string> foundEvents;
+
     for (const auto &ev: evenimente) {
         std::chrono::sys_seconds event_tp = std::chrono::sys_days{ev.getDate()} + ev.getHour().to_duration() -
                                             std::chrono::hours(3); // -3 pt UTC, romania are GMT+3, hardcoded
@@ -73,12 +76,13 @@ void EventManager::notifyUpcomingEvents() const {
 
         // verif daca evenimentul e in <= delta ore
         if (event_tp >= now_sec && diff <= std::chrono::hours(delta)) {
-            found = true;
             auto hours_left = std::chrono::duration_cast<std::chrono::hours>(diff).count();
             auto minutes_left = std::chrono::duration_cast<std::chrono::minutes>(diff).count() % 60;
             auto seconds_left = std::chrono::duration_cast<std::chrono::seconds>(diff).count() % 60;
 
-            std::cout << "Upcoming event: " << ev.getTitle()
+            std::stringstream tmp;
+
+            tmp << "Upcoming event: " << ev.getTitle()
                     << " at " << std::setw(2) << std::setfill('0') << unsigned(ev.getHour().hours().count())
                     << ":" << std::setw(2) << std::setfill('0') << unsigned(ev.getHour().minutes().count())
                     << ":" << std::setw(2) << std::setfill('0') << unsigned(ev.getHour().seconds().count())
@@ -88,11 +92,14 @@ void EventManager::notifyUpcomingEvents() const {
                     << " in " << ev.getLocation()
                     << " (in " << hours_left << "h "
                     << minutes_left << "m "
-                    << seconds_left << "s)\n";
+                    << seconds_left << "s)";
+            foundEvents.push_back(tmp.str());
         }
     }
-    if (!found)
-        std::cout << "Nu exista evenimente in urmatoarele " << delta << " ore.\n";
+    if (foundEvents.empty())
+        foundEvents.push_back("Nu exista evenimente in urmatoarele " + std::to_string(delta) + " ore.");
+
+    return foundEvents;
 }
 
 void EventManager::saveToFile(const std::string &filename) const {
