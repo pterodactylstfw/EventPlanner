@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {EventModel} from '../event.model';
 import {EventService} from '../event.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-add-event',
@@ -10,7 +11,9 @@ import {EventService} from '../event.service';
   styleUrl: './add-event.component.scss'
 })
 export class AddEventComponent {
+
   submitted = false;
+
   event: EventModel = {
     id: 0,
     title: '',
@@ -20,7 +23,8 @@ export class AddEventComponent {
     location: ''
   };
 
-  constructor(private eventService: EventService) {
+  constructor(private eventService: EventService,
+              private router: Router) {
   }
 
   onSubmit() {
@@ -28,9 +32,12 @@ export class AddEventComponent {
     this.eventService.addEvent(this.event).subscribe({
       next: (response) => {
         console.log('Raspuns de la server:', response);
+        alert('Eveniment adaugat cu succes!');
+        this.router.navigate(['/']);
       },
       error: (err) => {
         console.error('A aparut o eroare:', err);
+        alert('Eroare la adaugarea evenimentului!');
       }
     });
   }
