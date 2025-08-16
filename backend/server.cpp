@@ -6,16 +6,17 @@
 #include "EventManager.h"
 #include "Event.h"
 #include <nlohmann/json.hpp>
-#include <iomanip> // Necesar pentru std::setw si std::setfill
+#include <iomanip>
 
 using json = nlohmann::json;
 
 EventManager manager;
 
 struct CorsMiddleware {
-    struct context {};
+    struct context {
+    };
 
-    void before_handle(crow::request & req, crow::response & res, context& ctw) {
+    void before_handle(crow::request &req, crow::response &res, context &ctw) {
         if (req.method == crow::HTTPMethod::Options) {
             res.add_header("Access-Control-Allow-Origin", "*");
             res.add_header("Access-Control-Allow-Headers", "Content-Type, Authorization");
@@ -25,10 +26,11 @@ struct CorsMiddleware {
         }
     }
 
-        void after_handle(crow::request & req, crow::response & res, context & ctx) {
-            res.add_header("Access-Control-Allow-Origin", "*");
-        }
-    };
+    void after_handle(crow::request &req, crow::response &res, context &ctx) {
+        res.add_header("Access-Control-Allow-Origin", "*");
+        res.add_header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    }
+};
 
 Event eventFromJson(const crow::json::rvalue &json_body, unsigned int id) {
     std::string title = json_body["title"].s();
@@ -40,9 +42,9 @@ Event eventFromJson(const crow::json::rvalue &json_body, unsigned int id) {
     std::stringstream data_ss(data_str);
     std::string day_str, month_str, year_str;
 
-    std::getline(data_ss, day_str, '/');
-    std::getline(data_ss, month_str, '/');
-    std::getline(data_ss, year_str);
+    std::getline(data_ss, year_str, '-');
+    std::getline(data_ss, month_str, '-');
+    std::getline(data_ss, day_str);
 
     auto y = std::chrono::year{std::stoi(year_str)};
     auto m = std::chrono::month{static_cast<unsigned int>(std::stoul(month_str))};
@@ -51,7 +53,7 @@ Event eventFromJson(const crow::json::rvalue &json_body, unsigned int id) {
     std::chrono::year_month_day data{y, m, d};
 
     std::stringstream ora_ss(ora_str);
-    std::string hour_str, min_str, sec_str;
+    std::string hour_str, min_str, sec_str = "0";
 
     std::getline(ora_ss, hour_str, ':');
     std::getline(ora_ss, min_str, ':');
@@ -59,7 +61,6 @@ Event eventFromJson(const crow::json::rvalue &json_body, unsigned int id) {
 
     auto h = std::chrono::hours{std::stoi(hour_str)};
     auto min = std::chrono::minutes{std::stoi(min_str)};
-    // AICI ERA UN BUG: foloseai minutes in loc de seconds
     auto s = std::chrono::seconds{std::stoi(sec_str)};
 
     std::chrono::hh_mm_ss<std::chrono::seconds> ora{h + min + s};
