@@ -1,5 +1,10 @@
 <h2>Lista Evenimente</h2>
 
+<button (click)="openAddEventDialog()" color="primary" mat-raised-button style="margin-left: 20px;">
+  Adaugă Eveniment
+</button>
+
+
 @if (loading) {
   <div>Se incarca...</div>
 } @else if (error) {

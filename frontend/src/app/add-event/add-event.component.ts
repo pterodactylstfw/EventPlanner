@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {EventModel} from '../event.model';
 import {EventService} from '../event.service';
-import {Router} from '@angular/router';
+import {MatDialogRef} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-add-event',
@@ -24,7 +24,7 @@ export class AddEventComponent {
   };
 
   constructor(private eventService: EventService,
-              private router: Router) {
+              public dialogRef: MatDialogRef<AddEventComponent>) {
   }
 
   onSubmit() {
@@ -33,12 +33,17 @@ export class AddEventComponent {
       next: (response) => {
         console.log('Raspuns de la server:', response);
         alert('Eveniment adaugat cu succes!');
-        this.router.navigate(['/']);
+        this.dialogRef.close(true);
       },
       error: (err) => {
         console.error('A aparut o eroare:', err);
         alert('Eroare la adaugarea evenimentului!');
+        this.dialogRef.close(false);
       }
     });
+  }
+
+  onCancel(): void {
+    this.dialogRef.close();
   }
 }
