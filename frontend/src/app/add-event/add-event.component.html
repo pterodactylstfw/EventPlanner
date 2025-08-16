@@ -1,0 +1,28 @@
+<p>add-event works!</p>
+
+<div class="form-group">
+  <form (ngSubmit)="onSubmit()">
+    <label for="name">Name</label>
+    <input [(ngModel)]="event.title" class="form-control" id="name"
+           name="name"
+           required type="text">
+    <label for="description">Description</label>
+    <textarea [(ngModel)]="event.description" class="form-control"
+              id="description"
+              name="description" required></textarea>
+    <label for="date">Date</label>
+    <input [(ngModel)]="event.date" class="form-control" id="date"
+           name="date"
+           required type="date">
+    <label for="time">Time</label>
+    <input [(ngModel)]="event.hour" class="form-control" id="hour"
+           name="hour"
+           required type="time">
+    <label for="location">Location</label>
+    <input [(ngModel)]="event.location" class="form-control" id="location"
+           name="location"
+           required type="text">
+    <label for="submit">Submit</label>
+    <button class="md-button" type="submit">Submit</button>
+  </form>
+</div>
