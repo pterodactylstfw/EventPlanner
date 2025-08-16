@@ -35,7 +35,6 @@ add_executable(EventPlannerGui
         Event.h
         EventManager.cpp
         EventManager.h
-        server.cpp
 )
 
 # API (Crow REST API)

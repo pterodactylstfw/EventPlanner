@@ -12,6 +12,23 @@ using json = nlohmann::json;
 
 EventManager manager;
 
+struct CorsMiddleware {
+    struct context {};
+
+    void before_handle(crow::request & req, crow::response & res, context& ctw) {
+        if (req.method == crow::HTTPMethod::Options) {
+            res.add_header("Access-Control-Allow-Origin", "*");
+            res.add_header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+            res.add_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+            res.code = 204;
+            res.end();
+        }
+    }
+
+        void after_handle(crow::request & req, crow::response & res, context & ctx) {
+            res.add_header("Access-Control-Allow-Origin", "*");
+        }
+    };
 
 Event eventFromJson(const crow::json::rvalue &json_body, unsigned int id) {
     std::string title = json_body["title"].s();
@@ -52,7 +69,7 @@ Event eventFromJson(const crow::json::rvalue &json_body, unsigned int id) {
 
 
 int main() {
-    crow::SimpleApp app;
+    crow::App<CorsMiddleware> app;
     manager.loadFromFile("evenimente.txt");
 
     CROW_ROUTE(app, "/add-event").methods(crow::HTTPMethod::Post)([](const crow::request &req) {
