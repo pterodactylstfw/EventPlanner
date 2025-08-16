@@ -1,0 +1,18 @@
+<h2>Lista Evenimente</h2>
+<b>test</b>
+
+@if (loading) {
+  <div>Se incarca...</div>
+} @else if (error) {
+  <div class="error">{{ error }}</div>
+} @else {
+  <ul>
+    @for (event of events; track event.id) {
+      <li>
+        <strong>{{ event.title }}</strong> - {{ event.date }} {{ event.hour }} @ {{ event.location }}
+        <br/>
+        {{ event.description }}
+      </li>
+    }
+  </ul>
+}
