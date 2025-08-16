@@ -6,17 +6,19 @@
 #include "EventManager.h"
 #include "Event.h"
 #include <nlohmann/json.hpp>
+#include <iomanip> // Necesar pentru std::setw si std::setfill
+
 using json = nlohmann::json;
 
 EventManager manager;
 
 
-Event eventFromJson(const crow::json::rvalue &json, unsigned int id) {
-    std::string title = json["title"].s();
-    std::string description = json["description"].s();
-    std::string data_str = json["date"].s();
-    std::string ora_str = json["hour"].s();
-    std::string location = json["location"].s();
+Event eventFromJson(const crow::json::rvalue &json_body, unsigned int id) {
+    std::string title = json_body["title"].s();
+    std::string description = json_body["description"].s();
+    std::string data_str = json_body["date"].s();
+    std::string ora_str = json_body["hour"].s();
+    std::string location = json_body["location"].s();
 
     std::stringstream data_ss(data_str);
     std::string day_str, month_str, year_str;
@@ -40,7 +42,8 @@ Event eventFromJson(const crow::json::rvalue &json, unsigned int id) {
 
     auto h = std::chrono::hours{std::stoi(hour_str)};
     auto min = std::chrono::minutes{std::stoi(min_str)};
-    auto s = std::chrono::minutes{std::stoi(sec_str)};
+    // AICI ERA UN BUG: foloseai minutes in loc de seconds
+    auto s = std::chrono::seconds{std::stoi(sec_str)};
 
     std::chrono::hh_mm_ss<std::chrono::seconds> ora{h + min + s};
 
@@ -58,27 +61,21 @@ int main() {
             return crow::response(400, "Invalid JSON");
 
         unsigned int newID = manager.getNextID();
-
         Event ev = eventFromJson(body, newID);
-
         manager.addEvent(ev);
-
-        manager.saveToFile("evenimente.txt"); // automatic save
-
+        manager.saveToFile("evenimente.txt");
         return crow::response(200, "Eveniment adaugat cu succes!");
     });
 
 
     CROW_ROUTE(app, "/events").methods(crow::HTTPMethod::Get)([]() {
         json eventsArray = json::array();
-
         for (const auto &ev: manager.getEvents()) {
             json eventJson;
             eventJson["id"] = ev.getID();
             eventJson["title"] = ev.getTitle();
             eventJson["description"] = ev.getDescription();
 
-            // Format data cu stringstream
             auto data = ev.getDate();
             std::stringstream date_ss;
             date_ss << std::setw(2) << std::setfill('0') << unsigned(data.day()) << "/"
@@ -86,24 +83,23 @@ int main() {
                     << int(data.year());
             eventJson["date"] = date_ss.str();
 
-            // Format ora cu stringstream
             auto ora = ev.getHour();
             std::stringstream ora_ss;
             ora_ss << std::setw(2) << std::setfill('0') << ora.hours().count() << ":"
-                    << std::setw(2) << std::setfill('0') << ora.minutes().count() << ":"
-                    << std::setw(2) << std::setfill('0') << ora.seconds().count();
+                   << std::setw(2) << std::setfill('0') << ora.minutes().count() << ":"
+                   << std::setw(2) << std::setfill('0') << ora.seconds().count();
             eventJson["hour"] = ora_ss.str();
 
             eventJson["location"] = ev.getLocation();
-
             eventsArray.push_back(eventJson);
         }
-
         return crow::response(eventsArray.dump());
     });
 
-
-    CROW_ROUTE(app, "/events/{id}").methods(crow::HTTPMethod::Put)([](int id, const crow::request &req) {
+    // SINTAXA CORECTA: <int> in URL
+    // ORDINEA CORECTA: (request, id) in lambda
+    CROW_ROUTE(app, "/events/<int>").methods(crow::HTTPMethod::Put)
+    ([](const crow::request &req, int id) {
         auto body = crow::json::load(req.body);
         if (!body)
             return crow::response(400, "Invalid JSON");
@@ -112,16 +108,18 @@ int main() {
         bool ok = manager.editEvent(id, event);
 
         if (ok) {
-            manager.saveToFile("evenimente.txt"); // automatic save
+            manager.saveToFile("evenimente.txt");
             return crow::response(200, "Eveniment editat cu succces!");
         } else
             return crow::response(404, "Evenimentul nu exista!");
     });
 
-    CROW_ROUTE(app, "/events/{id}").methods(crow::HTTPMethod::Delete)([](int id) {
+    // SINTAXA CORECTA: <int> in URL si doar `id` ca parametru
+    CROW_ROUTE(app, "/events/<int>").methods(crow::HTTPMethod::Delete)
+    ([](int id) {
         bool ok = manager.deleteEvent(id);
         if (ok) {
-            manager.saveToFile("evenimente.txt"); // automatic save
+            manager.saveToFile("evenimente.txt");
             return crow::response(200, "Eveniment sters cu succes!");
         } else
             return crow::response(404, "Evenimentul nu exista!");
