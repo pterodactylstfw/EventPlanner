@@ -17,7 +17,7 @@ export class EventService {
   }
 
   addEvent(event: EventModel): Observable<any> {
-    return this.http.post(`${this.apiUrl}/add-event`, event);
+    return this.http.post(`${this.apiUrl}/add-event`, event, {responseType: 'text'});
 
   }
 }
