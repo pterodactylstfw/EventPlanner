@@ -1,0 +1,22 @@
+.event-item {
+  position: relative;
+  padding: 16px;
+  border-bottom: 1px solid #eee;
+  list-style-type: none
+}
+
+.action-buttons {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+
+  opacity: 0; // invizibil initial
+
+  transition: opacity 0.2s ease-in-out;
+}
+
+.event-item:hover {
+  .action-buttons {
+    opacity: 1; // vizibil pe hover
+  }
+}

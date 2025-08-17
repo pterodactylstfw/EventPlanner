@@ -1,6 +1,6 @@
 <h2>Lista Evenimente</h2>
 
-<button (click)="openAddEventDialog()" color="primary" mat-raised-button style="margin-left: 20px;">
+<button (click)="openAddEventDialog()">
   Adaugă Eveniment
 </button>
 
@@ -11,11 +11,20 @@
   <div class="error">{{ error }}</div>
 } @else {
   <ul>
-    @for (event of events; track event.id) {
-      <li>
+    @for (event of events; track event.id; ) {
+      <li class="event-item">
+        <div>
         <strong>{{ event.title }}</strong> - {{ event.date }} {{ event.hour }} &#64; {{ event.location }}
         <br/>
         {{ event.description }}
+        </div>
+
+        <div class="action-buttons">
+          <button mat-icon-button color="warn" (click)="deleteEvent(event.id)">
+            <mat-icon>Delete</mat-icon>
+
+          </button>
+        </div>
       </li>
     }
   </ul>

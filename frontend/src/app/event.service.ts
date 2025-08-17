@@ -18,6 +18,9 @@ export class EventService {
 
   addEvent(event: EventModel): Observable<any> {
     return this.http.post(`${this.apiUrl}/add-event`, event, {responseType: 'text'});
+  }
 
+  deleteEventService(id: number) {
+    return this.http.delete(`${this.apiUrl}/events/${id}`, {responseType: 'text'})
   }
 }
