@@ -7,6 +7,7 @@ import {AddEventComponent} from '../add-event/add-event.component';
 import {MatIcon} from '@angular/material/icon';
 import {ConfirmationDialogComponent} from '../confirmation-dialog/confirmation-dialog.component';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-events-list',
@@ -14,7 +15,8 @@ import {MatSnackBar} from '@angular/material/snack-bar';
   imports: [
     MatDialogModule,
     MatButtonModule,
-    MatIcon
+    MatIcon,
+    MatProgressSpinnerModule
   ],
   templateUrl: './events-list.component.html',
   styleUrl: './events-list.component.scss'
