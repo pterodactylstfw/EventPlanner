@@ -1,26 +1,37 @@
 <div class="form-group">
-  <form (ngSubmit)="onSubmit()">
+
+  <form #eventForm="ngForm" (ngSubmit)="onSubmit()">
     <label for="name">Name</label>
     <input [(ngModel)]="event.title" class="form-control" id="name"
            name="name"
-           required type="text">
+           #titleInput="ngModel" required
+           type="text">
+    @if (!titleInput.valid && titleInput.touched) {
+      <div class="error-message">Acest camp este obligatoriu!</div>
+    }
     <label for="description">Description</label>
     <textarea [(ngModel)]="event.description" class="form-control"
               id="description"
-              name="description" required></textarea>
+              name="description"></textarea>
     <label for="date">Date</label>
     <input [(ngModel)]="event.date" class="form-control" id="date"
            name="date"
-           required type="date">
+           #dateInput="ngModel" required type="date">
+    @if (!dateInput.valid && dateInput.touched) {
+      <div class="error-message">Acest camp este obligatoriu!</div>
+    }
     <label for="time">Time</label>
     <input [(ngModel)]="event.hour" class="form-control" id="hour"
            name="hour"
-           required type="time">
+           #timeInput="ngModel" required type="time">
+    @if (!timeInput.valid && timeInput.touched) {
+      <div class="error-message">Acest camp este obligatoriu!</div>
+    }
     <label for="location">Location</label>
     <input [(ngModel)]="event.location" class="form-control" id="location"
            name="location"
-           required type="text">
+           type="text">
     <label for="submit">Submit</label>
-    <button class="md-button" type="submit">Submit</button>
+    <button [disabled]="!eventForm.valid" class="md-button" type="submit">Submit</button>
   </form>
 </div>
