@@ -74,4 +74,24 @@ export class EventsListComponent implements OnInit {
     } else console.log('Utilizatorul a anulat actiunea de stergere: Cancel');
 
   }
+
+  openEditDialog(eventToEdit: EventModel): void {
+    console.log(`Utilizatorul vrea sa editeze evenimentul cu ID-ul: ${eventToEdit.id}`);
+    const dialogRef = this.dialog.open(AddEventComponent, {
+        width: '1800px',
+        data: eventToEdit
+      }
+    )
+
+    dialogRef.afterClosed().subscribe(result => {
+      // `result` este `true` dacă ai închis cu succes (din `dialogRef.close(true)`)
+      if (result) {
+        console.log('Dialogul de editare s-a închis cu succes, reîncărcăm evenimentele.');
+        this.loadEvents(); // Apelezi funcția care reface cererea GET către server
+      }
+    });
+
+  };
+
+
 }

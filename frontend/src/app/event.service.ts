@@ -20,6 +20,10 @@ export class EventService {
     return this.http.post(`${this.apiUrl}/add-event`, event, {responseType: 'text'});
   }
 
+  updateEvent(event: EventModel): Observable<any> {
+    return this.http.put(`${this.apiUrl}/events/${event.id}`, event, {responseType: 'text'});
+  }
+
   deleteEventService(id: number) {
     return this.http.delete(`${this.apiUrl}/events/${id}`, {responseType: 'text'})
   }

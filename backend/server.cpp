@@ -16,7 +16,7 @@ struct CorsMiddleware {
     struct context {
     };
 
-    void allow_methods(crow::request & req, crow::response& res, context &ct) {
+    void allow_methods(crow::request &req, crow::response &res, context &ct) {
         res.add_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
     }
 
@@ -24,7 +24,7 @@ struct CorsMiddleware {
         if (req.method == crow::HTTPMethod::Options) {
             res.add_header("Access-Control-Allow-Origin", "*");
             res.add_header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-            allow_methods(req,res,ctw);
+            allow_methods(req, res, ctw);
             res.code = 204;
             res.end();
         }
@@ -33,7 +33,7 @@ struct CorsMiddleware {
     void after_handle(crow::request &req, crow::response &res, context &ctx) {
         res.add_header("Access-Control-Allow-Origin", "*");
         res.add_header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-        allow_methods(req,res,ctx);
+        allow_methods(req, res, ctx);
     }
 };
 

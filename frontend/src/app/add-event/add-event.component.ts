@@ -1,8 +1,8 @@
-import {Component} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {EventModel} from '../event.model';
 import {EventService} from '../event.service';
-import {MatDialogRef} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-add-event',
@@ -10,7 +10,7 @@ import {MatDialogRef} from '@angular/material/dialog';
   templateUrl: './add-event.component.html',
   styleUrl: './add-event.component.scss'
 })
-export class AddEventComponent {
+export class AddEventComponent implements OnInit {
 
   submitted = false;
 
@@ -23,12 +23,22 @@ export class AddEventComponent {
     location: ''
   };
 
+  isEditMode: boolean = false;
+
   constructor(private eventService: EventService,
-              public dialogRef: MatDialogRef<AddEventComponent>) {
+              public dialogRef: MatDialogRef<AddEventComponent>, @Inject(MAT_DIALOG_DATA) public data: EventModel) {
+  }
+
+  ngOnInit() {
+    if (this.data) {
+      this.event = {...this.data};
+      this.isEditMode = true;
+    }
   }
 
   onSubmit() {
     this.submitted = true;
+    if (!this.isEditMode) {
     this.eventService.addEvent(this.event).subscribe({
       next: (response) => {
         console.log('Raspuns de la server:', response);
@@ -41,7 +51,23 @@ export class AddEventComponent {
         this.dialogRef.close(false);
       }
     });
+    } else {
+      this.eventService.updateEvent(this.event).subscribe({
+        next: (response) => {
+          console.log('Raspuns de la server:', response);
+          alert('Evenimentul a fost editat cu succes!');
+          this.dialogRef.close(true);
+        },
+        error: (err) => {
+          console.error('A aparut o eroare: ', err);
+          alert('A aparut o eroare la editarea evenimentului!');
+          this.dialogRef.close(false);
+        }
+      });
+    }
   }
+
+
 
   onCancel(): void {
     this.dialogRef.close();
