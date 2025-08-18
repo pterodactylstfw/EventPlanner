@@ -16,7 +16,7 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
     MatDialogModule,
     MatButtonModule,
     MatIcon,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
   ],
   templateUrl: './events-list.component.html',
   styleUrl: './events-list.component.scss'
@@ -25,6 +25,9 @@ export class EventsListComponent implements OnInit {
   events: EventModel[] = [];
   loading = true;
   error = '';
+  sortOrder: string = 'date';
+  sortMenuOpened: boolean = false;
+
 
   constructor(private eventService: EventService, public dialog: MatDialog, private snackBar: MatSnackBar) {
   }
@@ -42,12 +45,38 @@ export class EventsListComponent implements OnInit {
     });
   }
 
+  sortEvents(): void {
+    if (this.sortOrder === 'date') {
+      this.events.sort((a, b) => {
+        const dateComparison = a.date.localeCompare(b.date);
+        if (dateComparison != 0)
+          return dateComparison;
+        return a.hour.localeCompare(b.hour);
+      });
+    } else if (this.sortOrder === 'title') {
+      this.events.sort((a, b) => a.title.localeCompare(b.title));
+    } else if (this.sortOrder === 'location') {
+      this.events.sort((a, b) => a.location.localeCompare(b.location));
+    }
+  }
+
+  toggleSortMenu() {
+    this.sortMenuOpened = !this.sortMenuOpened;
+  }
+
+  selectSortMethod(method: string) {
+    this.sortOrder = method;
+    this.sortEvents();
+    this.toggleSortMenu();
+  }
+
   loadEvents(): void {
     this.loading = true;
     this.eventService.getEvents().subscribe({
       next: (data) => {
         this.events = data;
         this.loading = false;
+        this.sortEvents();
       },
       error: () => {
         this.error = 'Eroare la preluarea evenimentelor!';

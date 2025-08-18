@@ -1,7 +1,7 @@
 <h2>Lista Evenimente</h2>
 
-<button (click)="openAddEventDialog()">
-  Adaugă Eveniment
+<button (click)="openAddEventDialog()" mat-icon-button>
+  <mat-icon>add</mat-icon>
 </button>
 
 @if (loading) {
@@ -9,6 +9,15 @@
 } @else if (error) {
   <div class="error">{{ error }}</div>
 } @else {
+
+  <button mat-icon-button color="color" (click)="toggleSortMenu()">
+    <mat-icon>sort</mat-icon>
+  </button>
+  @if (sortMenuOpened) {
+    <button mat-button (click)="selectSortMethod('date')">Dupa data</button>
+    <button mat-button (click)="selectSortMethod('title')">Dupa titlu</button>
+    <button mat-button (click)="selectSortMethod('location')">Dupa locatie</button>
+  }
   <ul>
     @for (event of events; track event.id; ) {
       <li class="event-item">
@@ -22,10 +31,10 @@
 
         <div class="action-buttons">
           <button mat-icon-button color="warn" (click)="deleteEvent(event.id)">
-            <mat-icon>Delete</mat-icon>
+            <mat-icon>delete</mat-icon>
           </button>
           <button mat-icon-button color="warn" (click)="openEditDialog(event)">
-            <mat-icon>Edit</mat-icon>
+            <mat-icon>edit</mat-icon>
           </button>
         </div>
       </li>
