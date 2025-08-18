@@ -27,6 +27,7 @@ struct CorsMiddleware {
             allow_methods(req, res, ctw);
             res.code = 204;
             res.end();
+
         }
     }
 

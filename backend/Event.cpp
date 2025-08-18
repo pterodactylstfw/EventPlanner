@@ -1,4 +1,4 @@
-//
+﻿//
 // Created by Raul-Nicolae Constantin on 29.07.2025.
 //
 
@@ -96,8 +96,17 @@ std::string Event::serialize() const {
     return ss.str();
 }
 
+void trim_bom(std::string& s) {
+    if (s.length() >= 3 && s[0] == (char)0xEF && s[1] == (char)0xBB && s[2] == (char)0xBF) {
+        s.erase(0, 3);
+    }
+}
+
 Event Event::deserialize(const std::string &line) {
-    std::stringstream line_ss(line);
+    std::string clean_line = line;
+    trim_bom(clean_line);
+
+    std::stringstream line_ss(clean_line);
     std::string part;
     std::vector<std::string> fields;
 
@@ -144,12 +153,12 @@ Event Event::deserialize(const std::string &line) {
         std::chrono::hh_mm_ss<std::chrono::seconds> parsed_ora{h + min + s};
 
         return {id, titlu, descriere, parsed_data, parsed_ora, locatie};
-
-    } catch (const std::invalid_argument& e) {
+    } catch (const std::invalid_argument &e) {
         std::cerr << "Eroare de conversie la parsarea liniei: [" << line << "]. Motiv: " << e.what() << std::endl;
         return {0, "INVALID", "Eroare de conversie", {}, {}, ""};
-    } catch (const std::out_of_range& e) {
-        std::cerr << "Eroare de conversie (out of range) la parsarea liniei: [" << line << "]. Motiv: " << e.what() << std::endl;
+    } catch (const std::out_of_range &e) {
+        std::cerr << "Eroare de conversie (out of range) la parsarea liniei: [" << line << "]. Motiv: " << e.what() <<
+                std::endl;
         return {0, "INVALID", "Eroare de conversie", {}, {}, ""};
     }
 }

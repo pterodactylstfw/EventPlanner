@@ -5,6 +5,7 @@ import {MatDialog, MatDialogModule} from '@angular/material/dialog';
 import {MatButtonModule} from '@angular/material/button';
 import {AddEventComponent} from '../add-event/add-event.component';
 import {MatIcon} from '@angular/material/icon';
+import {ConfirmationDialogComponent} from '../confirmation-dialog/confirmation-dialog.component';
 
 
 @Component({
@@ -60,19 +61,33 @@ export class EventsListComponent implements OnInit {
 
   deleteEvent(id: number): void {
     console.log(`Utilizatorul vrea sa stearga evenimentul cu ID-ul: ${id}`);
-    if (confirm(`Sunteti sigur ca doriti sa stergeti evenimentul?`)) {
-      this.eventService.deleteEventService(id).subscribe({
-        next: (response: any) => {
-          console.log('Raspuns de la server:', response);
+    const eventToDelete = this.events.find(event => event.id === id);
+
+    if (!eventToDelete) {
+      console.error('Eroare: Evenimentul nu a fost găsit în listă!');
+      return;
+    }
+
+    const message: string = `Sunteti sigur ca doriti sa stergeti evenimentul ${eventToDelete.title}?`;
+
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '500px',
+      data: {
+        title: 'Confirmare stergere', message: message
+      }
+
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) this.eventService.deleteEventService(id).subscribe({
+        next: () => {
           this.loadEvents();
-        },
-        error: (err: any) => {
-          alert('A aparut o eroare in stergerea evenimentului!');
-          console.error('A aparut o eroare: ', err)
+          console.log('Operatiunea de stergere a fost efectuata cu succes!');
         }
       });
-    } else console.log('Utilizatorul a anulat actiunea de stergere: Cancel');
 
+      else console.log('Utilizatorul a anulat actiunea de stergere: Cancel');
+    });
   }
 
   openEditDialog(eventToEdit: EventModel): void {
