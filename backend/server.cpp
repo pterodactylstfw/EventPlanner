@@ -101,7 +101,8 @@ int main() {
 
             auto data = ev.getDate();
             std::stringstream date_ss;
-            date_ss <<int(data.year())<< "-" << std::setw(2) << std::setfill('0') << unsigned(data.month())<< "-"<<std::setw(2) << std::setfill('0') << unsigned(data.day());
+            date_ss << int(data.year()) << "-" << std::setw(2) << std::setfill('0') << unsigned(data.month()) << "-" <<
+                    std::setw(2) << std::setfill('0') << unsigned(data.day());
             eventJson["date"] = date_ss.str();
 
             auto ora = ev.getHour();

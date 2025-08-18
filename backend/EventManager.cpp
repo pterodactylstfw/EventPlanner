@@ -124,8 +124,12 @@ void EventManager::loadFromFile(const std::string &filename) {
 
     evenimente.clear(); // reset list of events;
     std::string line;
-    while (std::getline(fin, line))
+    while (std::getline(fin, line)) {
+        if (line.empty()) {
+            continue;
+        }
         evenimente.push_back(Event::deserialize(line));
+    }
 
     unsigned int maxID = 0;
     for (const auto &ev: evenimente)
@@ -134,3 +138,4 @@ void EventManager::loadFromFile(const std::string &filename) {
 
     fin.close();
 }
+
