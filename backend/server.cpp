@@ -101,9 +101,7 @@ int main() {
 
             auto data = ev.getDate();
             std::stringstream date_ss;
-            date_ss << std::setw(2) << std::setfill('0') << unsigned(data.day()) << "/"
-                    << std::setw(2) << std::setfill('0') << unsigned(data.month()) << "/"
-                    << int(data.year());
+            date_ss <<int(data.year())<< "-" << std::setw(2) << std::setfill('0') << unsigned(data.month())<< "-"<<std::setw(2) << std::setfill('0') << unsigned(data.day());
             eventJson["date"] = date_ss.str();
 
             auto ora = ev.getHour();
@@ -119,8 +117,7 @@ int main() {
         return crow::response(eventsArray.dump());
     });
 
-    // SINTAXA CORECTA: <int> in URL
-    // ORDINEA CORECTA: (request, id) in lambda
+
     CROW_ROUTE(app, "/events/<int>").methods(crow::HTTPMethod::Put)
     ([](const crow::request &req, int id) {
         auto body = crow::json::load(req.body);
@@ -137,7 +134,6 @@ int main() {
             return crow::response(404, "Evenimentul nu exista!");
     });
 
-    // SINTAXA CORECTA: <int> in URL si doar `id` ca parametru
     CROW_ROUTE(app, "/events/<int>").methods(crow::HTTPMethod::Delete)
     ([](int id) {
         bool ok = manager.deleteEvent(id);
