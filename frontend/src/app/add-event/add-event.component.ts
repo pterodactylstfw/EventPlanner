@@ -2,12 +2,19 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {EventModel} from '../event.model';
 import {EventService} from '../event.service';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogRef} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatError, MatInputModule} from '@angular/material/input';
+import {MatButtonModule} from '@angular/material/button';
 
 @Component({
   selector: 'app-add-event',
-  imports: [FormsModule],
+  imports: [FormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatError, MatDialogContent, MatDialogActions],
   templateUrl: './add-event.component.html',
   styleUrl: './add-event.component.scss'
 })

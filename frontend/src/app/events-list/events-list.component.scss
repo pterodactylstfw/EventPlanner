@@ -1,18 +1,32 @@
+$primary-color: #5A67D8; // Indigo
+$text-color: #2D3748; // Gri închis (Charcoal)
+$item-bg: #FFFFFF; // Alb
+$border-color: #E2E8F0;
+
 .event-item {
+  background: $item-bg;
+  color: $text-color;
   position: relative;
+  border-bottom: 1px solid $border-color;
+  border-radius: 8px;
   padding: 16px;
-  border-bottom: 1px solid #eee;
-  list-style-type: none
+  margin-bottom: 12px;
+  list-style-type: none;
+
+
+  .action-buttons {
+    position: absolute;
+    opacity: 0;
+    top: 16px;
+    right: 16px;
+  }
 }
 
-.action-buttons {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-
-  opacity: 0; // invizibil initial
-
-  transition: opacity 0.2s ease-in-out;
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
 }
 
 .event-item:hover {
