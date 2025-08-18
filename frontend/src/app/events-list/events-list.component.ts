@@ -6,7 +6,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {AddEventComponent} from '../add-event/add-event.component';
 import {MatIcon} from '@angular/material/icon';
 import {ConfirmationDialogComponent} from '../confirmation-dialog/confirmation-dialog.component';
-
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-events-list',
@@ -24,7 +24,7 @@ export class EventsListComponent implements OnInit {
   loading = true;
   error = '';
 
-  constructor(private eventService: EventService, public dialog: MatDialog) {
+  constructor(private eventService: EventService, public dialog: MatDialog, private snackBar: MatSnackBar) {
   }
 
   protected readonly confirm = confirm;
@@ -54,6 +54,11 @@ export class EventsListComponent implements OnInit {
     })
   }
 
+  showNotification(message: string): void {
+    this.snackBar.open(message, 'OK', {
+      duration: 3000
+    });
+  }
 
   ngOnInit() {
     this.loadEvents();
@@ -82,7 +87,12 @@ export class EventsListComponent implements OnInit {
       if (result) this.eventService.deleteEventService(id).subscribe({
         next: () => {
           this.loadEvents();
-          console.log('Operatiunea de stergere a fost efectuata cu succes!');
+          this.showNotification('Operatiunea de stergere a fost efectuata cu succes!');
+          //console.log('Operatiunea de stergere a fost efectuata cu succes!');
+        },
+        error: () => {
+          this.showNotification('A aparut o eroare in efectuarea stergerii!');
+          //console.error('A aparut o eroare la stergerea evenimentului!', err);
         }
       });
 
@@ -99,10 +109,9 @@ export class EventsListComponent implements OnInit {
     )
 
     dialogRef.afterClosed().subscribe(result => {
-      // `result` este `true` dacă ai închis cu succes (din `dialogRef.close(true)`)
       if (result) {
         console.log('Dialogul de editare s-a închis cu succes, reîncărcăm evenimentele.');
-        this.loadEvents(); // Apelezi funcția care reface cererea GET către server
+        this.loadEvents();
       }
     });
 
