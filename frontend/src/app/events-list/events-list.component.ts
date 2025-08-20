@@ -10,6 +10,7 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {FormsModule} from '@angular/forms';
+import {CommonModule} from '@angular/common';
 
 @Component({
   selector: 'app-events-list',
@@ -23,6 +24,7 @@ import {FormsModule} from '@angular/forms';
     MatLabel,
     FormsModule,
     MatInput,
+    CommonModule
   ],
   templateUrl: './events-list.component.html',
   styleUrl: './events-list.component.scss'
@@ -36,6 +38,8 @@ export class EventsListComponent implements OnInit {
 
   searchText: string = '';
   filteredEvents: EventModel[] = [];
+
+  groupedEvents: { [key: string]: EventModel[] } = {};
 
   constructor(private eventService: EventService, public dialog: MatDialog, private snackBar: MatSnackBar) {
   }
@@ -81,10 +85,31 @@ export class EventsListComponent implements OnInit {
   filterEvents(): void {
     if (!this.searchText) {
       this.filteredEvents = this.events;
-      return;
     } else {
       this.filteredEvents = this.events.filter(event => event.title.toLowerCase().includes(this.searchText.toLowerCase())
       );
+    }
+    this.groupEvents();
+  }
+
+  groupEvents(): void {
+    this.groupedEvents = {};
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    let groupName: string;
+
+    for (const event of this.filteredEvents) {
+      const eventDate = new Date(event.date);
+
+      if (eventDate < today) groupName = 'Trecute';
+      else if (eventDate.getTime() === today.getTime()) groupName = 'Astazi';
+      else groupName = 'Viitoare';
+
+      if (!this.groupedEvents[groupName])
+        this.groupedEvents[groupName] = [];
+
+      this.groupedEvents[groupName].push(event);
+
     }
   }
 

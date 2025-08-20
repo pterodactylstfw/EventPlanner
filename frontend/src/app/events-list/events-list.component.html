@@ -27,26 +27,31 @@
     <input matInput [(ngModel)]="searchText" (input)="filterEvents()" placeholder="ex: Concert rock">
   </mat-form-field>
 
-  <ul>
-    @for (event of filteredEvents; track event.id; ) {
-      <li class="event-item">
-        <div>
-          <strong>{{ event.title }}</strong> - {{ event.date }} {{ event.hour }} @if (event.location != "") {
-          &#64;
-        } {{ event.location }}
-        <br/>
-        {{ event.description }}
-        </div>
 
-        <div class="action-buttons">
-          <button mat-icon-button color="warn" (click)="deleteEvent(event.id)">
-            <mat-icon>delete</mat-icon>
-          </button>
-          <button mat-icon-button color="warn" (click)="openEditDialog(event)">
-            <mat-icon>edit</mat-icon>
-          </button>
-        </div>
-      </li>
-    }
-  </ul>
+  @for (group of groupedEvents | keyvalue; track group.key) {
+
+    <h3 class="group-title">{{ group.key }}</h3>
+    <ul>
+      @for (event of group.value; track event.id) {
+        <li class="event-item">
+          <div>
+            <strong>{{ event.title }}</strong> - {{ event.date }} {{ event.hour }} @if (event.location != "") {
+            &#64;
+          } {{ event.location }}
+            <br/>
+            {{ event.description }}
+          </div>
+
+          <div class="action-buttons">
+            <button mat-icon-button color="warn" (click)="deleteEvent(event.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="openEditDialog(event)">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </div>
+        </li>
+      }
+    </ul>
+  }
 }
