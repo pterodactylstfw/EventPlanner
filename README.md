@@ -22,7 +22,7 @@ To get a local copy up and running, follow these simple steps.
 ### Prerequisites
 
 *   Node.js and npm
-*   A C++ compiler (like GCC)
+* A C++ compiler (like GCC or Clang)
 *   CMake
 
 ### Installation
@@ -30,49 +30,70 @@ To get a local copy up and running, follow these simple steps.
 1.  **Clone the repo**
     ```sh
     git clone https://github.com/pterodactylstfw/EventPlanner.git
+    cd EventPlanner
     ```
-2.  **Frontend Setup**
-    *   Navigate into frontend/ and install dependencies.
-    ```sh
-    cd frontend/
-    npm install
-    ```
-3.  **Backend Setup**
-    *   Aici descrie pașii pentru a compila și rula backend-ul C++. De exemplu:
+2. **Backend Setup**
+    * Compile the C++ backend. This will create two executables: `EventPlannerApi` (the web server) and `EventPlanner` (
+      the CLI version).
     ```sh
     cd backend/
     mkdir build
     cd build
     cmake ..
     make
-    ./EventPlannerApi
     ```
+3. **Frontend Setup**
+    * Navigate to the frontend directory and install npm dependencies.
+   ```sh
+   # From the root project folder
+   cd ../../frontend/
+   npm install
+   ```
 
 ## Usage
 
-You can use the application in 2 ways: using either CLI (missing features from the web version), or GUI version.
+The application can be run in two modes: with a full graphical user interface (GUI) or as a command-line interface (
+CLI).
 
-**Using EventPlanner with CLI**
-**Run the ./EventPlanner, found in build/ folder.**
+### Web Application (GUI)
 
-**Using EventPlanner with GUI**
+To use the web version, you need to run both the backend server and the frontend application.
 
 1.  **Run the Backend Server**
-    *   Run the ./EventPlannerApi found in /build folder.
+    * From the `backend/build` directory, run the API executable. The server will start on `http://localhost:18080`.
     ```sh
-    cd build/
-    ./EventPlannerAPi
-    # backend server will run at http://localhost:18080.
-    # If you want to see all the events in .JSON, go to http://localhost:18080/events.
+    # From the backend/build/ directory
+    ./EventPlannerApi
     ```
 2.  **Run the Frontend Application**
-    *   Run Angular development server.
+    * In a new terminal, navigate to the `frontend` directory and start the Angular development server.
     ```sh
-    # from the frontend folder
-    cd frontend/
+    # From the frontend/ directory
     ng serve
     ```
-3.  Open your browser and navigate to `http://localhost:4200/`.
+3. **Access the Application**
+    * Open your browser and navigate to `http://localhost:4200/`.
+
+### Command-Line Interface (CLI)
+
+The CLI version has fewer features but can be run directly.
+
+* From the `backend/build` directory, run the `EventPlanner` executable.
+  ```sh
+  # From the backend/build/ directory
+  ./EventPlanner
+  ```
+
+## Contributing
+
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any
+contributions you make are **greatly appreciated**.
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ## License
 
