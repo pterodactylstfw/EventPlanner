@@ -21,8 +21,14 @@
     <button mat-button (click)="selectSortMethod('title')">Dupa titlu</button>
     <button mat-button (click)="selectSortMethod('location')">Dupa locatie</button>
   }
+
+  <mat-form-field>
+    <mat-label>Filtrează după titlu</mat-label>
+    <input matInput [(ngModel)]="searchText" (input)="filterEvents()" placeholder="ex: Concert rock">
+  </mat-form-field>
+
   <ul>
-    @for (event of events; track event.id; ) {
+    @for (event of filteredEvents; track event.id; ) {
       <li class="event-item">
         <div>
           <strong>{{ event.title }}</strong> - {{ event.date }} {{ event.hour }} @if (event.location != "") {

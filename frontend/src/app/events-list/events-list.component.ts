@@ -8,6 +8,8 @@ import {MatIcon} from '@angular/material/icon';
 import {ConfirmationDialogComponent} from '../confirmation-dialog/confirmation-dialog.component';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'app-events-list',
@@ -17,6 +19,10 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
     MatButtonModule,
     MatIcon,
     MatProgressSpinnerModule,
+    MatFormField,
+    MatLabel,
+    FormsModule,
+    MatInput,
   ],
   templateUrl: './events-list.component.html',
   styleUrl: './events-list.component.scss'
@@ -28,6 +34,8 @@ export class EventsListComponent implements OnInit {
   sortOrder: string = 'date';
   sortMenuOpened: boolean = false;
 
+  searchText: string = '';
+  filteredEvents: EventModel[] = [];
 
   constructor(private eventService: EventService, public dialog: MatDialog, private snackBar: MatSnackBar) {
   }
@@ -70,6 +78,16 @@ export class EventsListComponent implements OnInit {
     this.toggleSortMenu();
   }
 
+  filterEvents(): void {
+    if (!this.searchText) {
+      this.filteredEvents = this.events;
+      return;
+    } else {
+      this.filteredEvents = this.events.filter(event => event.title.toLowerCase().includes(this.searchText.toLowerCase())
+      );
+    }
+  }
+
   loadEvents(): void {
     this.loading = true;
     this.eventService.getEvents().subscribe({
@@ -77,6 +95,7 @@ export class EventsListComponent implements OnInit {
         this.events = data;
         this.loading = false;
         this.sortEvents();
+        this.filterEvents();
       },
       error: () => {
         this.error = 'Eroare la preluarea evenimentelor!';
