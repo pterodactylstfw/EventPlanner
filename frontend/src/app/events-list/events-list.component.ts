@@ -79,6 +79,7 @@ export class EventsListComponent implements OnInit {
   selectSortMethod(method: string) {
     this.sortOrder = method;
     this.sortEvents();
+    this.filterEvents();
     this.toggleSortMenu();
   }
 
@@ -119,8 +120,8 @@ export class EventsListComponent implements OnInit {
       next: (data) => {
         this.events = data;
         this.loading = false;
-        this.sortEvents();
         this.filterEvents();
+        this.sortEvents();
       },
       error: () => {
         this.error = 'Eroare la preluarea evenimentelor!';
