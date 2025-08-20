@@ -1,0 +1,81 @@
+<div class="add-event-container">
+  <h2>{{ isEditMode ? 'Editează Eveniment' : 'Adaugă Eveniment Nou' }}</h2>
+
+  <mat-dialog-content>
+    <form #eventForm="ngForm" (ngSubmit)="onSubmit()" class="add-event-form">
+
+      <mat-form-field class="full-width">
+        <mat-label>Titlu</mat-label>
+        <input #titleInput="ngModel"
+               [(ngModel)]="event.title"
+               matInput
+               name="title"
+               required>
+        @if (titleInput.invalid && titleInput.touched) {
+          <mat-error>Titlul este obligatoriu.</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field class="full-width">
+        <mat-label>Descriere</mat-label>
+        <textarea #descriptionInput="ngModel"
+                  [(ngModel)]="event.description"
+                  cdkTextareaAutosize
+                  matInput
+                  name="description"></textarea>
+      </mat-form-field>
+
+      <div class="row">
+        <mat-form-field class="col">
+          <mat-label>Data</mat-label>
+          <input #dateInput="ngModel"
+                 [(ngModel)]="event.date"
+                 matInput
+                 name="date"
+                 required
+                 type="date">
+          @if (dateInput.invalid && dateInput.touched) {
+            <mat-error>Data este obligatorie.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field class="col">
+          <mat-label>Ora</mat-label>
+          <input #timeInput="ngModel"
+                 [(ngModel)]="event.hour"
+                 matInput
+                 name="hour"
+                 required
+                 type="time">
+          @if (timeInput.invalid && timeInput.touched) {
+            <mat-error>Ora este obligatorie.</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <mat-form-field class="full-width">
+        <mat-label>Locație</mat-label>
+        <input #locationInput="ngModel"
+               [(ngModel)]="event.location"
+               matInput
+               name="location"
+               required>
+        @if (locationInput.invalid && locationInput.touched) {
+          <mat-error>Locația este obligatorie.</mat-error>
+        }
+      </mat-form-field>
+
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button (click)="onCancel()" mat-button>Anulează</button>
+    <button (click)="onSubmit()"
+            [disabled]="!eventForm.form.valid"
+            color="primary"
+            mat-raised-button>
+      {{ isEditMode ? 'Salvează Modificările' : 'Adaugă Eveniment' }}
+    </button>
+  </mat-dialog-actions>
+
+</div>

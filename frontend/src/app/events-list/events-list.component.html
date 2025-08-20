@@ -1,0 +1,57 @@
+<h2 id="eventsList">Lista Evenimente</h2>
+
+<button (click)="openAddEventDialog()" mat-icon-button>
+  <mat-icon>add</mat-icon>
+</button>
+
+@if (loading) {
+  <div class="loading-container">
+    <mat-progress-spinner color="primary" [diameter]="50"
+                          [strokeWidth]="5" mode="indeterminate"></mat-progress-spinner>
+  </div>
+} @else if (error) {
+  <div class="error">{{ error }}</div>
+} @else {
+
+  <button mat-icon-button color="color" (click)="toggleSortMenu()">
+    <mat-icon>sort</mat-icon>
+  </button>
+  @if (sortMenuOpened) {
+    <button mat-button (click)="selectSortMethod('date')">Dupa data</button>
+    <button mat-button (click)="selectSortMethod('title')">Dupa titlu</button>
+    <button mat-button (click)="selectSortMethod('location')">Dupa locatie</button>
+  }
+
+  <mat-form-field>
+    <mat-label>Filtrează după titlu</mat-label>
+    <input matInput [(ngModel)]="searchText" (input)="filterEvents()" placeholder="ex: Concert rock">
+  </mat-form-field>
+
+
+  @for (group of groupedEvents | keyvalue; track group.key) {
+
+    <h3 class="group-title">{{ group.key }}</h3>
+    <ul>
+      @for (event of group.value; track event.id) {
+        <li class="event-item">
+          <div>
+            <strong>{{ event.title }}</strong> - {{ event.date }} {{ event.hour }} @if (event.location != "") {
+            &#64;
+          } {{ event.location }}
+            <br/>
+            {{ event.description }}
+          </div>
+
+          <div class="action-buttons">
+            <button mat-icon-button color="warn" (click)="deleteEvent(event.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="openEditDialog(event)">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+}

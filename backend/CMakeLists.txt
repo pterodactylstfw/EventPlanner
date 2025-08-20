@@ -17,7 +17,6 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(nlohmann_json)
 
-find_package(Qt6 COMPONENTS Widgets REQUIRED)
 
 # CLI
 add_executable(EventPlanner

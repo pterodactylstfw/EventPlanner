@@ -6,29 +6,37 @@
 #include "EventManager.h"
 #include "Event.h"
 #include <nlohmann/json.hpp>
-#include <iomanip> // Necesar pentru std::setw si std::setfill
+#include <iomanip>
 
 using json = nlohmann::json;
 
 EventManager manager;
 
 struct CorsMiddleware {
-    struct context {};
+    struct context {
+    };
 
-    void before_handle(crow::request & req, crow::response & res, context& ctw) {
+    void allow_methods(crow::request &req, crow::response &res, context &ct) {
+        res.add_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    }
+
+    void before_handle(crow::request &req, crow::response &res, context &ctw) {
         if (req.method == crow::HTTPMethod::Options) {
             res.add_header("Access-Control-Allow-Origin", "*");
             res.add_header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-            res.add_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+            allow_methods(req, res, ctw);
             res.code = 204;
             res.end();
+
         }
     }
 
-        void after_handle(crow::request & req, crow::response & res, context & ctx) {
-            res.add_header("Access-Control-Allow-Origin", "*");
-        }
-    };
+    void after_handle(crow::request &req, crow::response &res, context &ctx) {
+        res.add_header("Access-Control-Allow-Origin", "*");
+        res.add_header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        allow_methods(req, res, ctx);
+    }
+};
 
 Event eventFromJson(const crow::json::rvalue &json_body, unsigned int id) {
     std::string title = json_body["title"].s();
@@ -40,9 +48,9 @@ Event eventFromJson(const crow::json::rvalue &json_body, unsigned int id) {
     std::stringstream data_ss(data_str);
     std::string day_str, month_str, year_str;
 
-    std::getline(data_ss, day_str, '/');
-    std::getline(data_ss, month_str, '/');
-    std::getline(data_ss, year_str);
+    std::getline(data_ss, year_str, '-');
+    std::getline(data_ss, month_str, '-');
+    std::getline(data_ss, day_str);
 
     auto y = std::chrono::year{std::stoi(year_str)};
     auto m = std::chrono::month{static_cast<unsigned int>(std::stoul(month_str))};
@@ -51,7 +59,7 @@ Event eventFromJson(const crow::json::rvalue &json_body, unsigned int id) {
     std::chrono::year_month_day data{y, m, d};
 
     std::stringstream ora_ss(ora_str);
-    std::string hour_str, min_str, sec_str;
+    std::string hour_str, min_str, sec_str = "0";
 
     std::getline(ora_ss, hour_str, ':');
     std::getline(ora_ss, min_str, ':');
@@ -59,7 +67,6 @@ Event eventFromJson(const crow::json::rvalue &json_body, unsigned int id) {
 
     auto h = std::chrono::hours{std::stoi(hour_str)};
     auto min = std::chrono::minutes{std::stoi(min_str)};
-    // AICI ERA UN BUG: foloseai minutes in loc de seconds
     auto s = std::chrono::seconds{std::stoi(sec_str)};
 
     std::chrono::hh_mm_ss<std::chrono::seconds> ora{h + min + s};
@@ -95,9 +102,8 @@ int main() {
 
             auto data = ev.getDate();
             std::stringstream date_ss;
-            date_ss << std::setw(2) << std::setfill('0') << unsigned(data.day()) << "/"
-                    << std::setw(2) << std::setfill('0') << unsigned(data.month()) << "/"
-                    << int(data.year());
+            date_ss << int(data.year()) << "-" << std::setw(2) << std::setfill('0') << unsigned(data.month()) << "-" <<
+                    std::setw(2) << std::setfill('0') << unsigned(data.day());
             eventJson["date"] = date_ss.str();
 
             auto ora = ev.getHour();
@@ -113,8 +119,7 @@ int main() {
         return crow::response(eventsArray.dump());
     });
 
-    // SINTAXA CORECTA: <int> in URL
-    // ORDINEA CORECTA: (request, id) in lambda
+
     CROW_ROUTE(app, "/events/<int>").methods(crow::HTTPMethod::Put)
     ([](const crow::request &req, int id) {
         auto body = crow::json::load(req.body);
@@ -131,7 +136,6 @@ int main() {
             return crow::response(404, "Evenimentul nu exista!");
     });
 
-    // SINTAXA CORECTA: <int> in URL si doar `id` ca parametru
     CROW_ROUTE(app, "/events/<int>").methods(crow::HTTPMethod::Delete)
     ([](int id) {
         bool ok = manager.deleteEvent(id);

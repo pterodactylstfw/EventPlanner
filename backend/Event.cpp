@@ -1,4 +1,4 @@
-//
+﻿//
 // Created by Raul-Nicolae Constantin on 29.07.2025.
 //
 
@@ -96,8 +96,17 @@ std::string Event::serialize() const {
     return ss.str();
 }
 
+void trim_bom(std::string& s) {
+    if (s.length() >= 3 && s[0] == (char)0xEF && s[1] == (char)0xBB && s[2] == (char)0xBF) {
+        s.erase(0, 3);
+    }
+}
+
 Event Event::deserialize(const std::string &line) {
-    std::stringstream line_ss(line);
+    std::string clean_line = line;
+    trim_bom(clean_line);
+
+    std::stringstream line_ss(clean_line);
     std::string part;
     std::vector<std::string> fields;
 
@@ -105,36 +114,53 @@ Event Event::deserialize(const std::string &line) {
         fields.push_back(part);
     }
 
-    unsigned int id = std::stoul(fields[0]);
-    std::string titlu = fields[1];
-    std::string descriere = fields[2];
-    std::string locatie = fields[5];
+    if (fields.size() < 6) {
+        std::cerr << "Eroare: Linia este incompleta și nu poate fi parsata: " << line << std::endl;
 
-    std::stringstream data_ss(fields[3]);
-    std::string year_str, month_str, day_str;
+        return {0, "INVALID", "Linie coruptă", {}, {}, ""};
+    }
 
-    std::getline(data_ss, day_str, '/');
-    std::getline(data_ss, month_str, '/');
-    std::getline(data_ss, year_str);
+    try {
+        unsigned int id = std::stoul(fields[0]);
+        std::string titlu = fields[1];
+        std::string descriere = fields[2];
+        std::string locatie = fields[5];
 
-    auto y = std::chrono::year{std::stoi(year_str)};
-    auto m = std::chrono::month{static_cast<unsigned int>(std::stoul(month_str))};
-    auto d = std::chrono::day{static_cast<unsigned int>(std::stoul(day_str))};
-    std::chrono::year_month_day parsed_data{y, m, d};
 
-    std::stringstream ora_ss(fields[4]);
-    std::string hour_str, min_str, sec_str;
+        std::stringstream data_ss(fields[3]);
+        std::string year_str, month_str, day_str;
 
-    std::getline(ora_ss, hour_str, ':');
-    std::getline(ora_ss, min_str, ':');
-    std::getline(ora_ss, sec_str);
 
-    auto h = std::chrono::hours{std::stol(hour_str)};
-    auto min = std::chrono::minutes{std::stol(min_str)};
-    auto s = std::chrono::seconds{std::stol(sec_str)};
-    std::chrono::hh_mm_ss<std::chrono::seconds> parsed_ora{h + min + s};
+        std::getline(data_ss, year_str, '-');
+        std::getline(data_ss, month_str, '-');
+        std::getline(data_ss, day_str);
 
-    return {id, titlu, descriere, parsed_data, parsed_ora, locatie};
+        auto y = std::chrono::year{std::stoi(year_str)};
+        auto m = std::chrono::month{static_cast<unsigned int>(std::stoul(month_str))};
+        auto d = std::chrono::day{static_cast<unsigned int>(std::stoul(day_str))};
+        std::chrono::year_month_day parsed_data{y, m, d};
+
+        std::stringstream ora_ss(fields[4]);
+        std::string hour_str, min_str, sec_str;
+
+        std::getline(ora_ss, hour_str, ':');
+        std::getline(ora_ss, min_str, ':');
+        std::getline(ora_ss, sec_str);
+
+        auto h = std::chrono::hours{std::stol(hour_str)};
+        auto min = std::chrono::minutes{std::stol(min_str)};
+        auto s = sec_str.empty() ? std::chrono::seconds{0} : std::chrono::seconds{std::stol(sec_str)};
+        std::chrono::hh_mm_ss<std::chrono::seconds> parsed_ora{h + min + s};
+
+        return {id, titlu, descriere, parsed_data, parsed_ora, locatie};
+    } catch (const std::invalid_argument &e) {
+        std::cerr << "Eroare de conversie la parsarea liniei: [" << line << "]. Motiv: " << e.what() << std::endl;
+        return {0, "INVALID", "Eroare de conversie", {}, {}, ""};
+    } catch (const std::out_of_range &e) {
+        std::cerr << "Eroare de conversie (out of range) la parsarea liniei: [" << line << "]. Motiv: " << e.what() <<
+                std::endl;
+        return {0, "INVALID", "Eroare de conversie", {}, {}, ""};
+    }
 }
 
 
