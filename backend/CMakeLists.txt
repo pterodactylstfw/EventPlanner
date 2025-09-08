@@ -25,6 +25,8 @@ add_executable(EventPlanner
         Event.h
         EventManager.cpp
         EventManager.h
+        JsonUtils.cpp
+        JsonUtils.h
 )
 
 # GUI
@@ -43,6 +45,8 @@ add_executable(EventPlannerApi
         Event.h
         EventManager.cpp
         EventManager.h
+        JsonUtils.cpp
+        JsonUtils.h
 )
 
 target_link_libraries(EventPlanner PRIVATE nlohmann_json::nlohmann_json ${Boost_LIBRARIES} pthread)

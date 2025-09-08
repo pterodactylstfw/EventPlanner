@@ -20,14 +20,17 @@ json serialize(const Event &ev) {
     int year = int(ev.getDate().year());
 
     std::stringstream date_str;
-    date_str << std::setw(4)<<std::setfill('0')<<year << '-' << std::setw(2)<<std::setfill('0')<<month << '-' << std::setw(2)<<std::setfill('0')<<day;
+    date_str << std::setw(4) << std::setfill('0') << year << '-' << std::setw(2) << std::setfill('0') << month << '-' <<
+            std::setw(2) << std::setfill('0') << day;
 
     j_ev["data"] = date_str.str();
 
     // HOUR PARSING FORMAT: HH:mm:ss
 
     std::stringstream hour_str;
-    hour_str << std::setw(2) << std::setfill('0') << ev.getHour().hours().count() << ':' << std::setw(2) << std::setfill('0') << ev.getHour().minutes().count() << ':' << std::setw(2) << std::setfill('0') << ev.getHour().seconds().count();
+    hour_str << std::setw(2) << std::setfill('0') << ev.getHour().hours().count() << ':' << std::setw(2) <<
+            std::setfill('0') << ev.getHour().minutes().count() << ':' << std::setw(2) << std::setfill('0') << ev.
+            getHour().seconds().count();
 
     j_ev["ora"] = hour_str.str();
 
@@ -38,7 +41,7 @@ json serialize(const Event &ev) {
 Event deserialize(const json &j_ev) {
     std::vector<std::string> required = {"id", "titlu", "descriere", "locatie", "ora"};
     std::vector<std::string> missing;
-    for (const auto& key : required) {
+    for (const auto &key: required) {
         if (!j_ev.contains(key)) missing.push_back(key);
     }
     // Data - either in parts or string

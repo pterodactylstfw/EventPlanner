@@ -10,11 +10,9 @@
 
 using json = nlohmann::json;
 
-json serialize(const Event & ev);
+json serialize(const Event &ev);
 
-Event deserialize (const json & j_ev);
-
-
+Event deserialize(const json &j_ev);
 
 
 #endif //JSONUTILS_H

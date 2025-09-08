@@ -1,8 +1,12 @@
 <h2 id="eventsList">Lista Evenimente</h2>
+<button (click)="openAddEventDialog()" mat-flat-button>
 
-<button (click)="openAddEventDialog()" mat-icon-button>
   <mat-icon>add</mat-icon>
+  @if (events.length === 0) {
+    <span style="margin-left: 8px;">Adauga evenimentul </span>
+  }
 </button>
+
 
 @if (loading) {
   <div class="loading-container">
@@ -12,6 +16,10 @@
 } @else if (error) {
   <div class="error">{{ error }}</div>
 } @else {
+
+  @if (events.length === 0) {
+    <div>Nu exista evenimente de afisat!</div>
+  } @else {
 
   <button mat-icon-button color="color" (click)="toggleSortMenu()">
     <mat-icon>sort</mat-icon>
@@ -54,4 +62,5 @@
       }
     </ul>
   }
+}
 }
