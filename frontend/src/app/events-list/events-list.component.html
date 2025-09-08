@@ -1,12 +1,33 @@
 <h2 id="eventsList">Lista Evenimente</h2>
-<button (click)="openAddEventDialog()" mat-flat-button>
 
-  <mat-icon>add</mat-icon>
-  @if (events.length === 0) {
-    <span style="margin-left: 8px;">Adauga evenimentul </span>
+<div class="action-bar">
+  <button (click)="openAddEventDialog()" aria-label="Adaugă eveniment" color="primary" mat-fab>
+    <mat-icon>add</mat-icon>
+    @if (events.length === 0) {
+      <span class="add-label">Adaugă evenimentul</span>
+    }
+  </button>
+  <button (click)="toggleFilterInput()" aria-label="Filtrează" mat-icon-button>
+    <mat-icon>search</mat-icon>
+  </button>
+  @if (showFilter) {
+    <div
+      class="action-filter-anim visible"
+      (click)="$event.stopPropagation()"
+    >
+      <mat-form-field appearance="fill" class="action-filter">
+        <mat-label>Filtrează după titlu</mat-label>
+        <input matInput
+               [(ngModel)]="searchText"
+               (input)="filterEvents()"
+               (blur)="hideFilterInput()"
+               (keydown.escape)="hideFilterInput()"
+               #filterInput
+               placeholder="ex: Concert rock">
+      </mat-form-field>
+    </div>
   }
-</button>
-
+</div>
 
 @if (loading) {
   <div class="loading-container">
@@ -16,51 +37,64 @@
 } @else if (error) {
   <div class="error">{{ error }}</div>
 } @else {
-
   @if (events.length === 0) {
     <div>Nu exista evenimente de afisat!</div>
   } @else {
 
-  <button mat-icon-button color="color" (click)="toggleSortMenu()">
-    <mat-icon>sort</mat-icon>
-  </button>
-  @if (sortMenuOpened) {
-    <button mat-button (click)="selectSortMethod('date')">Dupa data</button>
-    <button mat-button (click)="selectSortMethod('title')">Dupa titlu</button>
-    <button mat-button (click)="selectSortMethod('location')">Dupa locatie</button>
-  }
+    @if (sortMenuOpened) {
+      <div class="sort-bar">
+        <button mat-button (click)="selectSortMethod('date')">Dupa data</button>
+        <button mat-button (click)="selectSortMethod('title')">Dupa titlu</button>
+        <button mat-button (click)="selectSortMethod('location')">Dupa locatie</button>
+      </div>
+    }
 
-  <mat-form-field>
-    <mat-label>Filtrează după titlu</mat-label>
-    <input matInput [(ngModel)]="searchText" (input)="filterEvents()" placeholder="ex: Concert rock">
-  </mat-form-field>
-
-
-  @for (group of groupedEvents | keyvalue; track group.key) {
-
-    <h3 class="group-title">{{ group.key }}</h3>
-    <ul>
-      @for (event of group.value; track event.id) {
-        <li class="event-item">
-          <div>
-            <strong>{{ event.title }}</strong> - {{ event.date }} {{ event.hour }} @if (event.location != "") {
-            &#64;
-          } {{ event.location }}
-            <br/>
-            {{ event.description }}
-          </div>
-
-          <div class="action-buttons">
-            <button mat-icon-button color="warn" (click)="deleteEvent(event.id)">
-              <mat-icon>delete</mat-icon>
+    @for (group of groupedEvents | keyvalue; track group.key) {
+      <h3 class="group-title">{{ group.key }}</h3>
+      <ul>
+        @for (event of group.value; track event.id) {
+          <li class="event-item">
+            <div>
+              <strong>{{ event.title }}</strong> - {{ event.date }} {{ event.hour }} @if (event.location != "") {
+              &#64;
+            } {{ event.location }}
+              <br/>
+              {{ event.description }}
+            </div>
+            <button mat-icon-button [matMenuTriggerFor]="eventMenu" class="more-actions">
+              <mat-icon>more_vert</mat-icon>
             </button>
-            <button mat-icon-button color="warn" (click)="openEditDialog(event)">
-              <mat-icon>edit</mat-icon>
-            </button>
-          </div>
-        </li>
-      }
-    </ul>
+            <mat-menu #eventMenu="matMenu">
+              <button mat-menu-item color="primary" (click)="deleteEvent(event.id)">
+                <mat-icon>delete</mat-icon>
+                <span>Stergere</span>
+              </button>
+              <button mat-menu-item color="warn" (click)="openEditDialog(event)">
+                <mat-icon>edit</mat-icon>
+                <span>Editare</span>
+              </button>
+            </mat-menu>
+          </li>
+        }
+      </ul>
+    }
   }
 }
+
+<button
+  (click)="toggleBottomBar()"
+  aria-label="Sortează"
+  class="sort-fab"
+  mat-fab
+>
+  <mat-icon>sort</mat-icon>
+</button>
+
+<!-- Bottom bar SORTARE -->
+@if (bottomBarVisible) {
+  <div class="bottom-bar visible">
+    <button mat-button (click)="selectSortMethod('date')">Data</button>
+    <button mat-button (click)="selectSortMethod('title')">Titlu</button>
+    <button mat-button (click)="selectSortMethod('location')">Locație</button>
+  </div>
 }

@@ -1,36 +1,226 @@
 $primary-color: #5A67D8; // Indigo
-$text-color: #2D3748; // Gri închis (Charcoal)
-$item-bg: #FFFFFF; // Alb
+$magenta: #9C27B0;
+$text-color: #2D3748;
+$item-bg: #FFFFFF;
 $border-color: #E2E8F0;
 
-.event-item {
-  background: $item-bg;
-  color: $text-color;
+// ---- GLOBAL STYLES ----
+
+#eventsList {
+  padding-left: 8px;
+}
+
+.action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 22px;
+  width: 100%;
+  max-width: 100vw;
   position: relative;
-  border-bottom: 1px solid $border-color;
-  border-radius: 8px;
-  padding: 16px;
-  margin-bottom: 12px;
-  list-style-type: none;
+}
 
+.action-bar button[mat-fab] {
+  background: $magenta;
+  color: #fff;
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0;
+  font-size: 22px;
+  box-shadow: 0 2px 8px rgba(156, 39, 176, 0.13);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-  .action-buttons {
-    position: absolute;
+.action-bar .add-label {
+  margin-left: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  color: $magenta;
+}
+
+.action-bar button[mat-icon-button] {
+  background: #fff;
+  border: 1px solid $border-color;
+  border-radius: 50%;
+  min-width: 40px;
+  min-height: 40px;
+  color: $primary-color;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-filter-anim {
+  display: flex;
+  align-items: center;
+  transition: max-width 0.3s cubic-bezier(.42, 0, .58, 1), opacity 0.3s;
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  margin-left: 8px;
+
+  &.visible {
+    max-width: 240px;
+    opacity: 1;
+  }
+
+  &.hidden {
+    max-width: 0;
     opacity: 0;
+  }
+}
+
+.action-bar .action-filter {
+  flex-grow: 1;
+  min-width: 140px;
+  max-width: 220px;
+}
+
+.bottom-bar {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background: #fff;
+  border-top: 1px solid $border-color;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  padding: 8px 0;
+  z-index: 99;
+  transition: transform 0.4s cubic-bezier(.42, 0, .58, 1), opacity 0.3s;
+  opacity: 0;
+  transform: translateY(100%);
+  pointer-events: none;
+
+  &.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+}
+
+.sort-fab {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 101;
+  background: $primary-color;
+  color: #fff;
+  box-shadow: 0 4px 18px rgba($primary-color, 0.19);
+}
+
+// ---- DESKTOP STYLES ----
+@media (min-width: 600px) {
+  #eventsList {
+    margin-top: 32px;
+  }
+  .event-item {
+    background: $item-bg;
+    color: $text-color;
+    position: relative;
+    border-bottom: 1px solid $border-color;
+    border-radius: 8px;
+    padding: 18px;
+    margin-bottom: 12px;
+    list-style-type: none;
+
+    .action-buttons,
+    .more-actions {
+      position: absolute;
+      opacity: 0;
+      top: 16px;
+      right: 16px;
+    }
+
+    &:hover {
+      .action-buttons,
+      .more-actions {
+        opacity: 1; // vizibil pe hover
+      }
+    }
+  }
+  .loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+  }
+}
+
+// ---- MOBILE STYLES ----
+@media (max-width: 600px) {
+  .action-bar {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 0 4px;
+    margin-bottom: 18px;
+    width: 100%;
+  }
+  .action-filter-anim.visible {
+    max-width: 100vw;
+  }
+  .action-bar .action-filter {
+    min-width: 120px;
+    max-width: 98vw;
+  }
+  .action-bar button[mat-fab] {
+    min-width: 38px;
+    min-height: 38px;
+    font-size: 21px;
+  }
+  .action-bar .add-label {
+    font-size: 13px;
+  }
+
+  .event-item {
+    background: $item-bg;
+    position: relative;
+    border-bottom: 1px solid $border-color;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    padding: 18px 0px 18px 18px;
+    list-style-type: none;
+  }
+
+  .action-buttons,
+  .more-actions {
+    position: absolute;
+    opacity: 0.75;
     top: 16px;
     right: 16px;
   }
-}
-
-.loading-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 40px;
-}
-
-.event-item:hover {
-  .action-buttons {
-    opacity: 1; // vizibil pe hover
+  .event-item:hover {
+    .action-buttons,
+    .more-actions {
+      opacity: 1;
+    }
+  }
+  .loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+  }
+  .group-title {
+    color: $magenta;
+    margin-left: 16px;
+  }
+  .bottom-bar {
+    padding: 12px 0;
+    font-size: 17px;
+  }
+  .sort-fab {
+    right: 16px;
+    bottom: 16px;
+    min-width: 54px;
+    min-height: 54px;
+    font-size: 27px;
   }
 }
+
+

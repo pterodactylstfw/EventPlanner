@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {EventService} from '../event.service';
 import {EventModel} from '../event.model';
 import {MatDialog, MatDialogModule} from '@angular/material/dialog';
@@ -11,6 +11,7 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
+import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
 
 @Component({
   selector: 'app-events-list',
@@ -24,7 +25,10 @@ import {CommonModule} from '@angular/common';
     MatLabel,
     FormsModule,
     MatInput,
-    CommonModule
+    CommonModule,
+    MatMenuItem,
+    MatMenu,
+    MatMenuTrigger
   ],
   templateUrl: './events-list.component.html',
   styleUrl: './events-list.component.scss'
@@ -35,8 +39,9 @@ export class EventsListComponent implements OnInit {
   error = '';
   sortOrder: string = 'date';
   sortMenuOpened: boolean = false;
-
+  showFilter = false;
   searchText: string = '';
+  bottomBarVisible = false;
   filteredEvents: EventModel[] = [];
 
   groupedEvents: { [key: string]: EventModel[] } = {};
@@ -56,41 +61,32 @@ export class EventsListComponent implements OnInit {
       if (result) this.loadEvents();
     });
   }
-
-  sortEvents(): void {
-    if (this.sortOrder === 'date') {
-      this.events.sort((a, b) => {
-        const dateComparison = a.date.localeCompare(b.date);
-        if (dateComparison != 0)
-          return dateComparison;
-        return a.hour.localeCompare(b.hour);
-      });
-    } else if (this.sortOrder === 'title') {
-      this.events.sort((a, b) => a.title.localeCompare(b.title));
-    } else if (this.sortOrder === 'location') {
-      this.events.sort((a, b) => a.location.localeCompare(b.location));
-    }
-  }
+  @ViewChild('filterInput') filterInput!: ElementRef<HTMLInputElement>;
 
   toggleSortMenu() {
     this.sortMenuOpened = !this.sortMenuOpened;
+  }
+
+  sortEvents(): void {
+    if (!this.filteredEvents) return;
+    if (this.sortOrder === 'date') {
+      this.filteredEvents.sort((a, b) => {
+        const dateComparison = a.date.localeCompare(b.date);
+        if (dateComparison !== 0) return dateComparison;
+        return a.hour.localeCompare(b.hour);
+      });
+    } else if (this.sortOrder === 'title') {
+      this.filteredEvents.sort((a, b) => a.title.localeCompare(b.title));
+    } else if (this.sortOrder === 'location') {
+      this.filteredEvents.sort((a, b) => a.location.localeCompare(b.location));
+    }
   }
 
   selectSortMethod(method: string) {
     this.sortOrder = method;
     this.sortEvents();
     this.filterEvents();
-    this.toggleSortMenu();
-  }
-
-  filterEvents(): void {
-    if (!this.searchText) {
-      this.filteredEvents = this.events;
-    } else {
-      this.filteredEvents = this.events.filter(event => event.title.toLowerCase().includes(this.searchText.toLowerCase())
-      );
-    }
-    this.groupEvents();
+    this.bottomBarVisible = false;
   }
 
   groupEvents(): void {
@@ -193,5 +189,35 @@ export class EventsListComponent implements OnInit {
 
   };
 
+  filterEvents(): void {
+    if (!this.searchText) {
+      this.filteredEvents = this.events;
+    } else {
+      this.filteredEvents = this.events.filter(event => event.title.toLowerCase().includes(this.searchText.toLowerCase())
+      );
+    }
+    this.sortEvents();
+    this.groupEvents();
+  }
+
+  toggleFilterInput() {
+    this.showFilter = !this.showFilter;
+    if (this.showFilter) {
+      setTimeout(() => {
+        if (this.filterInput) {
+          this.filterInput.nativeElement.focus();
+        }
+      }, 10);
+    }
+  }
+
+  hideFilterInput() {
+    this.showFilter = false;
+  }
+
+
+  toggleBottomBar() {
+    this.bottomBarVisible = !this.bottomBarVisible;
+  }
 
 }
