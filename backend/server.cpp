@@ -77,7 +77,7 @@ Event eventFromJson(const crow::json::rvalue &json_body, unsigned int id) {
 
 int main() {
     crow::App<CorsMiddleware> app;
-    manager.loadFromFile("evenimente.txt");
+    manager.loadFromFile("evenimente.json");
 
     CROW_ROUTE(app, "/add-event").methods(crow::HTTPMethod::Post)([](const crow::request &req) {
         auto body = crow::json::load(req.body);
@@ -87,7 +87,7 @@ int main() {
         unsigned int newID = manager.getNextID();
         Event ev = eventFromJson(body, newID);
         manager.addEvent(ev);
-        manager.saveToFile("evenimente.txt");
+        manager.saveToFile("evenimente.json");
         return crow::response(200, "Eveniment adaugat cu succes!");
     });
 
