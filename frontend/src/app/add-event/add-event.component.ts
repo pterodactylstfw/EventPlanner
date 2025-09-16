@@ -1,12 +1,14 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {EventModel} from '../event.model';
-import {EventService} from '../event.service';
+import {EventService} from '../services/event.service';
 import {MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogRef} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatError, MatInputModule} from '@angular/material/input';
 import {MatButtonModule} from '@angular/material/button';
+import {NotificationService} from '../services/notification.service';
+import {PlatformService} from '../services/platform.service';
 
 @Component({
   selector: 'app-add-event',
@@ -34,7 +36,11 @@ export class AddEventComponent implements OnInit {
   isEditMode: boolean = false;
 
   constructor(private eventService: EventService,
-              public dialogRef: MatDialogRef<AddEventComponent>, @Inject(MAT_DIALOG_DATA) public data: EventModel, private snackBar: MatSnackBar) {
+              public dialogRef: MatDialogRef<AddEventComponent>,
+              @Inject(MAT_DIALOG_DATA) public data: EventModel,
+              private snackBar: MatSnackBar,
+              private notificationService: NotificationService,
+              private platformService: PlatformService) {
   }
 
   ngOnInit() {
@@ -48,10 +54,20 @@ export class AddEventComponent implements OnInit {
     this.submitted = true;
     if (!this.isEditMode) {
     this.eventService.addEvent(this.event).subscribe({
-      next: (response) => {
+      next: async (response) => {
+        if (this.platformService.isNativeIOS()) {
+          await this.notificationService.requestPermission();
+          const success = await this.notificationService.scheduleNotification(this.event, 2); // 2 ore inainte
+          if (success) {
+            this.showNotification('Notificarea a fost programată cu succes!');
+          } else {
+            this.showNotification('Eroare la programarea notificării!');
+          }
+        }
         console.log('Raspuns de la server:', response);
         this.showNotification('Eveniment adaugat cu succes!');
         this.dialogRef.close(true);
+
       },
       error: (err) => {
         console.error('A aparut o eroare:', err);

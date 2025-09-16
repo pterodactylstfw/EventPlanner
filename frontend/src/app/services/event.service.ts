@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {from, Observable} from 'rxjs';
-import {EventModel} from './event.model';
+import {EventModel} from '../event.model';
 import {Capacitor} from '@capacitor/core';
 import {EventLocalService} from './event-local.service';
 

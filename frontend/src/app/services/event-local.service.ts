@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Preferences} from '@capacitor/preferences';
-import {EventModel} from './event.model';
+import {EventModel} from '../event.model';
 
 @Injectable({
   providedIn: 'root'
