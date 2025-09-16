@@ -84,11 +84,18 @@
     overflow-x: hidden;
   }
 
+
   body {
-    margin: 0;
     font-family: -apple-system, "Segoe UI", "Helvetica Neue", sans-serif;
   }
 
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  //* {
+  //  outline: 1px solid red;
+  //}
 
 }
 
