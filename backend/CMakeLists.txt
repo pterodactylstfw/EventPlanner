@@ -4,6 +4,15 @@ project(EventPlanner)
 set(CMAKE_CXX_STANDARD 20)
 
 
+set(CROW_HEADER_URL "https://github.com/CrowCpp/Crow/releases/latest/download/crow_all.h")
+set(CROW_HEADER_PATH "${CMAKE_BINARY_DIR}/crow_all.h")
+
+if(NOT EXISTS ${CROW_HEADER_PATH})
+    file(DOWNLOAD ${CROW_HEADER_URL} ${CROW_HEADER_PATH} SHOW_PROGRESS)
+endif()
+
+include_directories(${CMAKE_BINARY_DIR})
+
 include_directories(${CMAKE_SOURCE_DIR}/crow/include)
 include_directories(${CMAKE_BINARY_DIR}/_deps/asio-src/asio/include)
 
